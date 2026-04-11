@@ -1,0 +1,60 @@
+name: Challenge or Contribute Research
+description: Submit conflicting research, corrections, or supporting evidence for a page
+title: "[Challenge] "
+labels: ["community-submission"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping us improve. We take every submission seriously.
+        If you have conflicting research, a correction, or supporting evidence, share it here.
+
+  - type: input
+    id: page
+    attributes:
+      label: Which page is this about?
+      description: The page URL or topic name
+      placeholder: e.g. /turmeric/curcumin or "Curcumin"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: What kind of submission is this?
+      options:
+        - Conflicting research
+        - Correction (something is wrong)
+        - Supporting evidence (additional research)
+        - Missing information
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What do you want us to know?
+      placeholder: Briefly describe the issue or evidence
+    validations:
+      required: true
+
+  - type: textarea
+    id: sources
+    attributes:
+      label: Sources
+      description: Link to PubMed studies, journal articles, or other credible sources
+      placeholder: |
+        - https://pubmed.ncbi.nlm.nih.gov/12345678/
+        - https://www.nature.com/articles/...
+    validations:
+      required: false
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Anything else we should know
+    validations:
+      required: false

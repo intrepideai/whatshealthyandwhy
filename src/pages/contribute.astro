@@ -1,0 +1,102 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Contribute" description="Challenge our research, submit evidence, or suggest new topics.">
+  <div class="contribute-page">
+    <a href="/" class="back-link">&larr; Home</a>
+    <h1>Contribute</h1>
+    <p class="contribute-intro">This site is built on the idea that health information should be open, honest, and constantly improving. We need your help to make that happen.</p>
+
+    <section class="contribute-section">
+      <h2>Challenge Our Research</h2>
+      <p>Think something on this site is wrong, outdated, or missing important context? Good. That's exactly what we want to hear.</p>
+      <p>Every challenge is reviewed. If your evidence is solid, we'll update the page — and the change will be visible in the page's edit history for everyone to see.</p>
+      <a href="https://github.com/intrepideai/whatshealthyandwhy/issues/new?template=challenge.yml" target="_blank" rel="noopener noreferrer" class="contribute-button">
+        Submit conflicting or supporting research
+      </a>
+    </section>
+
+    <section class="contribute-section">
+      <h2>Suggest a Topic</h2>
+      <p>Is there a health topic we haven't covered yet? Let us know and we'll research it.</p>
+      <a href="https://github.com/intrepideai/whatshealthyandwhy/issues/new?title=[Topic Suggestion]&labels=topic-suggestion" target="_blank" rel="noopener noreferrer" class="contribute-button">
+        Suggest a new topic
+      </a>
+    </section>
+
+    <section class="contribute-section">
+      <h2>View Edit History</h2>
+      <p>Every page on this site has a "View edit history" link at the bottom. You can see exactly what changed, when, and why. No hidden edits, no silent changes.</p>
+      <a href="https://github.com/intrepideai/whatshealthyandwhy/commits/main/src/content/topics" target="_blank" rel="noopener noreferrer" class="contribute-button">
+        Browse all content changes
+      </a>
+    </section>
+
+    <section class="contribute-section">
+      <h2>How We Handle Submissions</h2>
+      <ul>
+        <li>Every submission is reviewed against the cited evidence</li>
+        <li>If the science supports a change, we update the page</li>
+        <li>The edit shows up in version history with a link to your submission</li>
+        <li>We don't delete conflicting evidence — if there's genuine scientific disagreement, we show both sides</li>
+        <li>We credit contributors who improve our content</li>
+      </ul>
+    </section>
+
+    <section class="contribute-section">
+      <h2>Open Source</h2>
+      <p>The entire site is open source. You can review the code, the content, and the build process.</p>
+      <a href="https://github.com/intrepideai/whatshealthyandwhy" target="_blank" rel="noopener noreferrer" class="contribute-button">
+        View source on GitHub
+      </a>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .contribute-page {
+    max-width: 38rem;
+  }
+
+  .contribute-intro {
+    font-size: 1.05rem;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-2xl);
+  }
+
+  .contribute-section {
+    margin-bottom: var(--space-2xl);
+  }
+
+  .contribute-section h2 {
+    margin-top: var(--space-lg);
+  }
+
+  .contribute-section ul {
+    padding-left: var(--space-lg);
+  }
+
+  .contribute-section li {
+    margin-bottom: var(--space-sm);
+    line-height: 1.5;
+  }
+
+  .contribute-button {
+    display: inline-block;
+    margin-top: var(--space-sm);
+    padding: 8px 16px;
+    border: 1px solid var(--color-accent);
+    border-radius: var(--radius);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-accent);
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .contribute-button:hover {
+    background: var(--color-accent-light);
+    text-decoration: none;
+  }
+</style>

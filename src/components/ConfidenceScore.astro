@@ -1,0 +1,80 @@
+---
+interface Props {
+  score?: number;
+  note?: string;
+}
+
+const { score, note } = Astro.props;
+
+if (!score) return;
+
+const labels = ['', 'Preliminary', 'Emerging', 'Moderate', 'Strong', 'Very Strong'];
+const label = labels[score] || '';
+const fills = Array.from({ length: 5 }, (_, i) => i < score);
+---
+
+<div class="confidence">
+  <div class="confidence-header">
+    <span class="confidence-label">Evidence Strength</span>
+    <span class="confidence-rating">{label}</span>
+  </div>
+  <div class="confidence-dots">
+    {fills.map((filled) => (
+      <span class={`confidence-dot ${filled ? 'filled' : ''}`} />
+    ))}
+  </div>
+  {note && <p class="confidence-note">{note}</p>}
+</div>
+
+<style>
+  .confidence {
+    margin-bottom: var(--space-xl);
+    padding: var(--space-md) var(--space-lg);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+  }
+
+  .confidence-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-xs);
+  }
+
+  .confidence-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-light);
+  }
+
+  .confidence-rating {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  .confidence-dots {
+    display: flex;
+    gap: 4px;
+  }
+
+  .confidence-dot {
+    width: 100%;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--color-border);
+  }
+
+  .confidence-dot.filled {
+    background: var(--color-accent);
+  }
+
+  .confidence-note {
+    margin: var(--space-sm) 0 0;
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    line-height: 1.4;
+  }
+</style>

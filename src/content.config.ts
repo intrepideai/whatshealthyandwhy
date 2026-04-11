@@ -9,6 +9,8 @@ const topics = defineCollection({
     order: z.number(),
     description: z.string(),
     level: z.number().optional(),
+    confidence: z.number().min(1).max(5).optional(),
+    confidenceNote: z.string().optional(),
     references: z.array(
       z.object({
         id: z.string(),

@@ -19,6 +19,14 @@
         "level": {
           "type": "number"
         },
+        "confidence": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "confidenceNote": {
+          "type": "string"
+        },
         "references": {
           "type": "array",
           "items": {

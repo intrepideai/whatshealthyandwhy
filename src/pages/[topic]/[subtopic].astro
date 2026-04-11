@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import ProgressiveDisclosure from '../../components/ProgressiveDisclosure.astro';
 import References from '../../components/References.astro';
+import ConfidenceScore from '../../components/ConfidenceScore.astro';
 import { getCollection } from 'astro:content';
 import { marked } from 'marked';
 
@@ -22,6 +23,11 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const topicSlug = Astro.params.topic;
+
+// Build GitHub history URL from content path
+const contentPath = `src/content/topics/${entry.id}.md`;
+const historyUrl = `https://github.com/intrepideai/whatshealthyandwhy/commits/main/${contentPath}`;
+const submitUrl = `https://github.com/intrepideai/whatshealthyandwhy/issues/new?template=challenge.yml&title=${encodeURIComponent(`[Challenge] ${entry.data.title}`)}&labels=community-submission`;
 
 function splitContent(body: string) {
   const moreMarker = '<!-- more -->';
@@ -62,6 +68,8 @@ const { simple, medium, deep } = splitContent(entry.body || '');
     <p class="subtopic-description">{entry.data.description}</p>
   </div>
 
+  <ConfidenceScore score={entry.data.confidence} note={entry.data.confidenceNote} />
+
   <ProgressiveDisclosure
     simple={simple}
     medium={medium}
@@ -70,4 +78,60 @@ const { simple, medium, deep } = splitContent(entry.body || '');
   />
 
   <References references={entry.data.references} />
+
+  <div class="page-footer-actions">
+    <div class="transparency-links">
+      <h3>Transparency</h3>
+      <a href={historyUrl} target="_blank" rel="noopener noreferrer" class="action-link">
+        View edit history
+      </a>
+      <a href={submitUrl} target="_blank" rel="noopener noreferrer" class="action-link">
+        Challenge or contribute
+      </a>
+    </div>
+    <p class="page-footer-note">Every change to this page is tracked in version control. If you have conflicting research or think something is wrong, we want to hear about it.</p>
+  </div>
 </Base>
+
+<style>
+  .page-footer-actions {
+    margin-top: var(--space-2xl);
+    padding-top: var(--space-xl);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .transparency-links {
+    margin-bottom: var(--space-md);
+  }
+
+  .transparency-links h3 {
+    font-size: 0.9rem;
+    margin-bottom: var(--space-sm);
+    color: var(--color-text-muted);
+  }
+
+  .action-link {
+    display: inline-block;
+    margin-right: var(--space-md);
+    padding: 6px 14px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .action-link:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  .page-footer-note {
+    font-size: 0.8rem;
+    color: var(--color-text-light);
+    font-style: italic;
+    max-width: 32rem;
+  }
+</style>
