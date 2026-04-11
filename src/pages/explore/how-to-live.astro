@@ -1,0 +1,15 @@
+---
+import CategoryPage from '../../components/CategoryPage.astro';
+
+const subcategories = [
+  { name: 'Exercise & Movement', slugs: ['resistance-training', 'walking', 'zone-2-cardio', 'stretching-mobility', 'rebounding'] },
+  { name: 'Therapeutic Practices', slugs: ['sauna', 'cold-exposure', 'prp', 'red-light-therapy', 'grounding', 'dry-brushing', 'oil-pulling', 'acupuncture', 'massage', 'forest-bathing'] },
+  { name: 'Wellness & Lifestyle', slugs: ['sleep', 'mouth-breathing', 'intermittent-fasting', 'meditation-breathwork', 'vagus-nerve', 'sunlight', 'posture', 'digital-detox', 'journaling'] },
+];
+---
+
+<CategoryPage
+  title="How to Live"
+  description="Exercise, sleep, fasting, breathwork, and daily practices for a healthier life."
+  subcategories={subcategories}
+/>

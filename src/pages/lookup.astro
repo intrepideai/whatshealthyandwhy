@@ -1,0 +1,205 @@
+---
+import Base from '../layouts/Base.astro';
+import conditions from '../data/conditions.json';
+
+// Group by category
+const categoryMap = new Map<string, typeof conditions>();
+for (const c of conditions) {
+  if (!categoryMap.has(c.category)) {
+    categoryMap.set(c.category, []);
+  }
+  categoryMap.get(c.category)!.push(c);
+}
+const categories = Array.from(categoryMap.entries());
+---
+
+<Base title="What Should I Take For...?" description="Find natural approaches for common health concerns. Not medical advice — always consult your doctor for serious conditions.">
+  <div class="lookup-header">
+    <a href="/" class="back-link">&larr; Home</a>
+    <h1>What Should I Take For...?</h1>
+    <p>Find research-backed natural approaches for common health concerns. Select a condition to see what the science suggests.</p>
+    <p class="lookup-disclaimer">This is not medical advice. For serious or persistent symptoms, see a healthcare provider.</p>
+  </div>
+
+  <input
+    type="search"
+    id="condition-search"
+    placeholder="Search conditions... (e.g. headache, anxiety, bloating)"
+    autocomplete="off"
+  />
+
+  <div id="condition-list">
+    {categories.map(([catName, catConditions]) => (
+      <section class="condition-category" data-category={catName}>
+        <h2>{catName}</h2>
+        <div class="condition-grid">
+          {catConditions.map((c: any) => (
+            <details class="condition-card" data-name={c.condition.toLowerCase()}>
+              <summary>
+                <span class="condition-name">{c.condition}</span>
+              </summary>
+              <div class="condition-body">
+                <p class="condition-quick"><strong>Quick answer:</strong> {c.quick}</p>
+                <ul class="condition-recs">
+                  {c.recommendations.map((r: any) => (
+                    <li>
+                      <a href={r.link}><strong>{r.name}</strong></a>
+                      <span> — {r.why}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </details>
+          ))}
+        </div>
+      </section>
+    ))}
+  </div>
+
+  <div id="no-results" class="no-results" style="display:none;">
+    No conditions match your search.
+  </div>
+</Base>
+
+<script>
+  const input = document.getElementById('condition-search') as HTMLInputElement;
+  const cards = document.querySelectorAll('.condition-card');
+  const categories = document.querySelectorAll('.condition-category');
+  const noResults = document.getElementById('no-results')!;
+
+  input.addEventListener('input', () => {
+    const q = input.value.toLowerCase().trim();
+    let anyVisible = false;
+
+    cards.forEach((card) => {
+      const name = card.getAttribute('data-name') || '';
+      const match = q.length < 2 || name.includes(q);
+      (card as HTMLElement).style.display = match ? '' : 'none';
+      if (match) anyVisible = true;
+    });
+
+    // Hide empty categories
+    categories.forEach((cat) => {
+      const visibleCards = cat.querySelectorAll('.condition-card:not([style*="display: none"])');
+      (cat as HTMLElement).style.display = visibleCards.length > 0 ? '' : 'none';
+    });
+
+    noResults.style.display = anyVisible ? 'none' : 'block';
+  });
+</script>
+
+<style>
+  .lookup-header {
+    margin-bottom: var(--space-xl);
+  }
+
+  .lookup-header h1 {
+    margin-bottom: var(--space-sm);
+  }
+
+  .lookup-header p {
+    color: var(--color-text-muted);
+    max-width: 36rem;
+  }
+
+  .lookup-disclaimer {
+    font-size: 0.85rem;
+    font-style: italic;
+    color: var(--color-text-light) !important;
+  }
+
+  #condition-search {
+    width: 100%;
+    padding: var(--space-sm) var(--space-lg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    background: var(--color-surface);
+    color: var(--color-text);
+    outline: none;
+    margin-bottom: var(--space-2xl);
+  }
+
+  #condition-search:focus {
+    border-color: var(--color-accent);
+  }
+
+  .condition-category h2 {
+    font-size: 1.1rem;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-md);
+    margin-top: var(--space-lg);
+  }
+
+  .condition-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-sm);
+    margin-bottom: var(--space-lg);
+  }
+
+  .condition-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .condition-card summary {
+    padding: var(--space-sm) var(--space-md);
+    cursor: pointer;
+    list-style: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .condition-card summary::-webkit-details-marker { display: none; }
+  .condition-card summary::marker { content: ''; }
+
+  .condition-card summary:hover {
+    background: var(--color-bg);
+  }
+
+  .condition-card[open] {
+    grid-column: 1 / -1;
+  }
+
+  .condition-body {
+    padding: 0 var(--space-md) var(--space-md);
+    border-top: 1px solid var(--color-border-light);
+  }
+
+  .condition-quick {
+    font-size: 0.9rem;
+    margin: var(--space-sm) 0;
+    color: var(--color-text);
+  }
+
+  .condition-recs {
+    padding-left: var(--space-lg);
+    margin: 0;
+  }
+
+  .condition-recs li {
+    font-size: 0.85rem;
+    margin-bottom: var(--space-xs);
+    line-height: 1.5;
+  }
+
+  .condition-recs a {
+    color: var(--color-accent);
+  }
+
+  .no-results {
+    text-align: center;
+    padding: var(--space-2xl);
+    color: var(--color-text-muted);
+  }
+
+  @media (max-width: 640px) {
+    .condition-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,407 @@
+[
+  {
+    "condition": "Headache",
+    "category": "Pain",
+    "quick": "Peppermint oil topically on temples, magnesium, ginger tea, hydration + electrolytes",
+    "recommendations": [
+      { "name": "Peppermint Oil", "why": "Applied topically, comparable to acetaminophen in studies", "link": "/essential-oils/top-medicinal-oils" },
+      { "name": "Magnesium", "why": "Deficiency is a common headache trigger", "link": "/magnesium/why-magnesium-matters" },
+      { "name": "Ginger", "why": "Anti-inflammatory gingerols reduce migraine severity", "link": "/ginger/gingerols-and-digestion" },
+      { "name": "Electrolytes", "why": "Dehydration and mineral imbalance trigger tension headaches", "link": "/electrolytes/beyond-water" },
+      { "name": "CoQ10", "why": "Shown to reduce migraine frequency by up to 50%", "link": "/coq10/coq10-basics" }
+    ]
+  },
+  {
+    "condition": "Joint Pain",
+    "category": "Pain",
+    "quick": "Turmeric/curcumin, omega-3s, bone broth, collagen, anti-inflammatory diet",
+    "recommendations": [
+      { "name": "Turmeric/Curcumin", "why": "Potent anti-inflammatory comparable to ibuprofen for joint pain", "link": "/turmeric/curcumin" },
+      { "name": "Omega-3 Fatty Acids", "why": "EPA/DHA reduce inflammatory cytokines in joints", "link": "/omega-3/epa-and-dha" },
+      { "name": "Bone Broth", "why": "Rich in glucosamine, chondroitin, and hyaluronic acid for cartilage support", "link": "/bone-broth/liquid-gold" },
+      { "name": "Collagen", "why": "Type II collagen supports cartilage regeneration", "link": "/collagen/types-and-benefits" },
+      { "name": "Anti-Inflammatory Foods", "why": "Reducing systemic inflammation is key to joint health", "link": "/anti-inflammatory-foods/foods-that-fight-inflammation" }
+    ]
+  },
+  {
+    "condition": "Muscle Soreness",
+    "category": "Pain",
+    "quick": "Magnesium baths, tart cherry juice, cold exposure, sauna, adequate protein",
+    "recommendations": [
+      { "name": "Magnesium", "why": "Epsom salt baths and oral magnesium relax muscles and reduce cramping", "link": "/magnesium/types-of-magnesium" },
+      { "name": "Tart Cherry", "why": "Anthocyanins reduce exercise-induced muscle damage and soreness", "link": "/tart-cherry/sleep-and-recovery" },
+      { "name": "Cold Exposure", "why": "Cold water immersion reduces inflammation and accelerates recovery", "link": "/cold-exposure/cold-therapy-basics" },
+      { "name": "Sauna", "why": "Heat therapy increases blood flow and speeds muscle repair", "link": "/sauna/heat-therapy-basics" },
+      { "name": "Turmeric", "why": "Curcumin reduces delayed-onset muscle soreness", "link": "/turmeric/bioavailability" }
+    ]
+  },
+  {
+    "condition": "Back Pain",
+    "category": "Pain",
+    "quick": "Magnesium, stretching/mobility work, anti-inflammatory protocol, posture correction, walking",
+    "recommendations": [
+      { "name": "Stretching & Mobility", "why": "Releasing tight fascia and hip flexors addresses root causes", "link": "/stretching-mobility/flexibility-and-fascia" },
+      { "name": "Magnesium", "why": "Muscle relaxant that relieves spasms contributing to back pain", "link": "/magnesium/sleep-and-stress" },
+      { "name": "Anti-Inflammatory Protocol", "why": "Chronic inflammation worsens disc and nerve pain", "link": "/natural-anti-inflammatories/anti-inflammatory-protocol" },
+      { "name": "Posture Correction", "why": "Modern sitting habits are the leading cause of chronic back pain", "link": "/posture/modern-posture-crisis" },
+      { "name": "Walking", "why": "Gentle movement lubricates joints and strengthens supporting muscles", "link": "/walking/most-underrated-exercise" }
+    ]
+  },
+  {
+    "condition": "Menstrual Cramps",
+    "category": "Pain",
+    "quick": "Magnesium glycinate, ginger tea, seed cycling, omega-3s, castor oil packs",
+    "recommendations": [
+      { "name": "Magnesium", "why": "Relaxes uterine muscles and reduces prostaglandin production", "link": "/magnesium/types-of-magnesium" },
+      { "name": "Ginger", "why": "As effective as ibuprofen for menstrual pain in multiple studies", "link": "/ginger/forms-and-dosing" },
+      { "name": "Seed Cycling", "why": "Supports hormone balance throughout the menstrual cycle", "link": "/seed-cycling/hormonal-support" },
+      { "name": "Omega-3s", "why": "Reduce inflammatory prostaglandins that cause cramping", "link": "/omega-3/sources-and-dosing" },
+      { "name": "Castor Oil", "why": "Topical castor oil packs over abdomen reduce pain and inflammation", "link": "/castor-oil/ricinoleic-acid" }
+    ]
+  },
+  {
+    "condition": "Bloating/Gas",
+    "category": "Digestion",
+    "quick": "Ginger, peppermint tea, probiotics, digestive bitters, eliminate seed oils",
+    "recommendations": [
+      { "name": "Ginger", "why": "Stimulates gastric motility and reduces gas accumulation", "link": "/ginger/gingerols-and-digestion" },
+      { "name": "Peppermint Tea", "why": "Relaxes smooth muscle in the digestive tract to relieve bloating", "link": "/tea/peppermint" },
+      { "name": "Probiotics", "why": "Rebalancing gut flora reduces gas-producing bacteria", "link": "/probiotics/strains-that-matter" },
+      { "name": "Apple Cider Vinegar", "why": "Supports stomach acid production for better digestion", "link": "/apple-cider-vinegar/what-the-science-says" },
+      { "name": "Fermented Foods", "why": "Natural enzymes and probiotics improve digestion over time", "link": "/fermented-foods/living-foods" }
+    ]
+  },
+  {
+    "condition": "Acid Reflux",
+    "category": "Digestion",
+    "quick": "Apple cider vinegar before meals, aloe vera juice, ginger, avoid seed oils, don't eat late",
+    "recommendations": [
+      { "name": "Apple Cider Vinegar", "why": "Often caused by too little stomach acid, not too much", "link": "/apple-cider-vinegar/what-the-science-says" },
+      { "name": "Aloe Vera", "why": "Soothes esophageal and stomach lining inflammation", "link": "/aloe-vera/healing-plant" },
+      { "name": "Ginger", "why": "Speeds gastric emptying to prevent acid backup", "link": "/ginger/gingerols-and-digestion" },
+      { "name": "Seed Oil Elimination", "why": "Inflammatory seed oils worsen gut lining damage", "link": "/seed-oils/inflammation-science" },
+      { "name": "Intermittent Fasting", "why": "Giving the digestive system rest reduces reflux episodes", "link": "/intermittent-fasting/benefits" }
+    ]
+  },
+  {
+    "condition": "Constipation",
+    "category": "Digestion",
+    "quick": "Magnesium citrate, hydration, fiber from whole foods, walking, probiotics",
+    "recommendations": [
+      { "name": "Magnesium Citrate", "why": "Draws water into the intestines for natural osmotic relief", "link": "/magnesium/types-of-magnesium" },
+      { "name": "Electrolytes", "why": "Proper hydration with minerals is essential for bowel function", "link": "/electrolytes/diy-electrolytes" },
+      { "name": "Probiotics", "why": "Certain strains improve gut motility and transit time", "link": "/probiotics/strains-that-matter" },
+      { "name": "Walking", "why": "Physical movement stimulates peristalsis", "link": "/walking/most-underrated-exercise" },
+      { "name": "Dandelion Root", "why": "Mild laxative and digestive bitter that promotes bile flow", "link": "/dandelion-root/liver-and-digestion" }
+    ]
+  },
+  {
+    "condition": "Nausea",
+    "category": "Digestion",
+    "quick": "Ginger (any form), peppermint, deep breathing, fresh air, small sips of bone broth",
+    "recommendations": [
+      { "name": "Ginger", "why": "Best-studied natural anti-nausea remedy, works on serotonin receptors", "link": "/ginger/forms-and-dosing" },
+      { "name": "Peppermint", "why": "Inhaled or consumed, peppermint calms stomach contractions", "link": "/tea/peppermint" },
+      { "name": "Breathwork", "why": "Slow diaphragmatic breathing activates the vagus nerve to calm nausea", "link": "/meditation-breathwork/breathing-techniques" },
+      { "name": "Bone Broth", "why": "Gentle nourishment that soothes the stomach lining", "link": "/bone-broth/liquid-gold" }
+    ]
+  },
+  {
+    "condition": "IBS Symptoms",
+    "category": "Digestion",
+    "quick": "L-glutamine, probiotics, peppermint oil capsules, bone broth, stress management",
+    "recommendations": [
+      { "name": "Leaky Gut Protocol", "why": "IBS and intestinal permeability are strongly linked", "link": "/leaky-gut/healing-the-gut" },
+      { "name": "Probiotics", "why": "Specific strains reduce IBS symptom severity significantly", "link": "/probiotics/strains-that-matter" },
+      { "name": "Peppermint", "why": "Enteric-coated peppermint oil capsules are clinically proven for IBS", "link": "/tea/peppermint" },
+      { "name": "Bone Broth", "why": "L-glutamine and gelatin help repair the intestinal lining", "link": "/bone-broth/liquid-gold" },
+      { "name": "Vagus Nerve Stimulation", "why": "Gut-brain axis dysfunction drives many IBS cases", "link": "/vagus-nerve/stimulation-techniques" }
+    ]
+  },
+  {
+    "condition": "Cold/Flu",
+    "category": "Immune",
+    "quick": "Elderberry, vitamin C, zinc, garlic, bone broth, rest and hydration",
+    "recommendations": [
+      { "name": "Elderberry", "why": "Reduces cold/flu duration by 2-4 days in clinical trials", "link": "/elderberry/immune-support" },
+      { "name": "Vitamin C", "why": "High-dose vitamin C at onset shortens illness duration", "link": "/vitamin-c/immune-and-beyond" },
+      { "name": "Zinc", "why": "Zinc lozenges within 24 hours of onset reduce cold duration", "link": "/zinc/immune-and-hormones" },
+      { "name": "Garlic", "why": "Allicin has broad-spectrum antimicrobial properties", "link": "/garlic/antimicrobial" },
+      { "name": "Bone Broth", "why": "Anti-inflammatory, hydrating, and rich in immune-supporting minerals", "link": "/bone-broth/liquid-gold" }
+    ]
+  },
+  {
+    "condition": "Sore Throat",
+    "category": "Immune",
+    "quick": "Raw honey, warm salt water gargle, oregano oil, marshmallow root tea, zinc lozenges",
+    "recommendations": [
+      { "name": "Raw Honey", "why": "Antimicrobial and coats the throat to reduce pain", "link": "/honey/natures-antibiotic" },
+      { "name": "Oregano Oil", "why": "Carvacrol is a potent antimicrobial that fights throat infections", "link": "/oregano-oil/carvacrol" },
+      { "name": "Zinc", "why": "Zinc lozenges directly combat pathogens in the throat", "link": "/zinc/zinc-basics" },
+      { "name": "Elderberry", "why": "Antiviral properties help resolve the underlying infection", "link": "/elderberry/immune-support" }
+    ]
+  },
+  {
+    "condition": "Sinus Congestion",
+    "category": "Immune",
+    "quick": "Steam inhalation with eucalyptus, neti pot, oregano oil, NAC, spicy foods",
+    "recommendations": [
+      { "name": "Essential Oils", "why": "Eucalyptus and peppermint oil steam inhalation opens airways", "link": "/essential-oils/top-medicinal-oils" },
+      { "name": "NAC", "why": "Thins mucus by breaking disulfide bonds in mucoproteins", "link": "/nac/nac-basics" },
+      { "name": "Oregano Oil", "why": "Antimicrobial action helps clear sinus infections", "link": "/oregano-oil/usage-and-safety" },
+      { "name": "Vitamin C", "why": "Reduces histamine levels and supports immune clearance", "link": "/vitamin-c/high-dose-vitamin-c" },
+      { "name": "Garlic", "why": "Natural decongestant with antimicrobial properties", "link": "/garlic/raw-vs-cooked" }
+    ]
+  },
+  {
+    "condition": "Allergies",
+    "category": "Immune",
+    "quick": "Quercetin, local honey, NAC, nettle tea, vitamin C, reduce histamine foods",
+    "recommendations": [
+      { "name": "Quercetin", "why": "Natural mast cell stabilizer that prevents histamine release", "link": "/quercetin/inflammation-and-longevity" },
+      { "name": "Raw Honey", "why": "Local honey may desensitize to local pollen allergens", "link": "/honey/natures-antibiotic" },
+      { "name": "NAC", "why": "Reduces mucus production and supports detox pathways", "link": "/nac/nac-basics" },
+      { "name": "Vitamin C", "why": "Acts as a natural antihistamine at higher doses", "link": "/vitamin-c/immune-and-beyond" },
+      { "name": "Probiotics", "why": "Gut health directly modulates immune/allergic response", "link": "/probiotics/gut-microbiome" }
+    ]
+  },
+  {
+    "condition": "Anxiety",
+    "category": "Mental",
+    "quick": "Magnesium glycinate, ashwagandha, L-theanine, breathwork, walking in nature",
+    "recommendations": [
+      { "name": "Magnesium", "why": "Calms the nervous system by regulating GABA receptors", "link": "/magnesium/sleep-and-stress" },
+      { "name": "Ashwagandha", "why": "Reduces cortisol by 30% in clinical trials", "link": "/ashwagandha/evidence-and-dosing" },
+      { "name": "L-Theanine", "why": "Promotes alpha brain waves for calm focus without sedation", "link": "/l-theanine/calm-focus" },
+      { "name": "Breathwork", "why": "Box breathing and extended exhales activate parasympathetic response", "link": "/meditation-breathwork/breathing-techniques" },
+      { "name": "Vagus Nerve Stimulation", "why": "Toning the vagus nerve directly reduces anxiety", "link": "/vagus-nerve/stimulation-techniques" }
+    ]
+  },
+  {
+    "condition": "Brain Fog",
+    "category": "Mental",
+    "quick": "Lion's mane, omega-3s, eliminate seed oils, hydration, sleep optimization",
+    "recommendations": [
+      { "name": "Lion's Mane", "why": "Stimulates nerve growth factor for improved cognitive function", "link": "/mushrooms/lions-mane" },
+      { "name": "Omega-3s", "why": "DHA is the primary structural fat in the brain", "link": "/omega-3/epa-and-dha" },
+      { "name": "Creatine", "why": "Provides ATP to energy-hungry brain cells", "link": "/creatine/creatine-basics" },
+      { "name": "Sleep Optimization", "why": "Poor sleep is the most common cause of brain fog", "link": "/sleep/sleep-hygiene" },
+      { "name": "Seed Oil Elimination", "why": "Oxidized seed oils contribute to neuroinflammation", "link": "/seed-oils/what-are-seed-oils" }
+    ]
+  },
+  {
+    "condition": "Low Mood",
+    "category": "Mental",
+    "quick": "Sunlight exposure, omega-3s, exercise, vitamin D, gut health optimization",
+    "recommendations": [
+      { "name": "Sunlight", "why": "Full-spectrum light triggers serotonin and dopamine production", "link": "/sunlight/more-than-vitamin-d" },
+      { "name": "Omega-3s", "why": "EPA specifically has antidepressant effects comparable to SSRIs", "link": "/omega-3/heart-health" },
+      { "name": "Vitamin D", "why": "Deficiency strongly correlates with depression", "link": "/vitamin-d/sunshine-vitamin" },
+      { "name": "Resistance Training", "why": "Strength training is one of the most effective natural antidepressants", "link": "/resistance-training/why-lift" },
+      { "name": "Gut Health", "why": "95% of serotonin is produced in the gut", "link": "/probiotics/gut-microbiome" }
+    ]
+  },
+  {
+    "condition": "Insomnia",
+    "category": "Mental",
+    "quick": "Magnesium glycinate, tart cherry juice, blue light blocking, glycine, chamomile tea",
+    "recommendations": [
+      { "name": "Magnesium", "why": "Glycinate form calms the nervous system and improves sleep quality", "link": "/magnesium/sleep-and-stress" },
+      { "name": "Tart Cherry", "why": "Natural source of melatonin that improves sleep duration", "link": "/tart-cherry/sleep-and-recovery" },
+      { "name": "Blue Light Management", "why": "Blue light after sunset suppresses melatonin production", "link": "/sleep/blue-light-and-circadian-rhythm" },
+      { "name": "Glycine", "why": "3g before bed lowers core body temperature and improves sleep onset", "link": "/glycine/sleep-and-metabolism" },
+      { "name": "Chamomile Tea", "why": "Apigenin binds GABA receptors for mild sedation", "link": "/tea/chamomile" }
+    ]
+  },
+  {
+    "condition": "Stress",
+    "category": "Mental",
+    "quick": "Ashwagandha, magnesium, breathwork, forest bathing, journaling",
+    "recommendations": [
+      { "name": "Ashwagandha", "why": "Adaptogen that modulates the HPA axis and lowers cortisol", "link": "/ashwagandha/adaptogen-basics" },
+      { "name": "Meditation & Breathwork", "why": "Activates parasympathetic nervous system within minutes", "link": "/meditation-breathwork/stress-and-brain" },
+      { "name": "Forest Bathing", "why": "Phytoncides from trees lower cortisol and boost NK cells", "link": "/forest-bathing/shinrin-yoku" },
+      { "name": "Magnesium", "why": "Stress depletes magnesium, creating a vicious cycle", "link": "/magnesium/why-magnesium-matters" },
+      { "name": "Journaling", "why": "Expressive writing reduces stress hormones measurably", "link": "/journaling/write-to-heal" }
+    ]
+  },
+  {
+    "condition": "Acne",
+    "category": "Skin",
+    "quick": "Zinc, seed oil elimination, reduce sugar, probiotics, tea tree oil topically",
+    "recommendations": [
+      { "name": "Zinc", "why": "Reduces sebum production and has antimicrobial effects on skin", "link": "/zinc/immune-and-hormones" },
+      { "name": "Seed Oil Elimination", "why": "Linoleic acid imbalance drives inflammatory acne", "link": "/seed-oils/healthy-alternatives" },
+      { "name": "Probiotics", "why": "Gut-skin axis means gut health directly affects skin clarity", "link": "/probiotics/gut-microbiome" },
+      { "name": "Essential Oils", "why": "Tea tree oil is as effective as benzoyl peroxide with fewer side effects", "link": "/essential-oils/top-medicinal-oils" },
+      { "name": "Liver Support", "why": "When the liver is overburdened, toxins exit through the skin", "link": "/liver-cleansing/supporting-detox-pathways" }
+    ]
+  },
+  {
+    "condition": "Eczema/Dry Skin",
+    "category": "Skin",
+    "quick": "Tallow balm, omega-3s, eliminate seed oils, vitamin D, probiotics",
+    "recommendations": [
+      { "name": "Tallow", "why": "Bioidentical to human skin lipids, deeply moisturizing", "link": "/tallow/ancestral-skincare" },
+      { "name": "Omega-3s", "why": "Reduce skin inflammation and improve barrier function", "link": "/omega-3/sources-and-dosing" },
+      { "name": "Vitamin D", "why": "Modulates immune response driving eczema flares", "link": "/vitamin-d/supplementation" },
+      { "name": "Probiotics", "why": "Specific strains reduce eczema severity, especially in children", "link": "/probiotics/strains-that-matter" },
+      { "name": "Coconut Oil", "why": "Lauric acid is antimicrobial and deeply moisturizing topically", "link": "/coconut-oil/mct-and-lauric-acid" }
+    ]
+  },
+  {
+    "condition": "Wound Healing",
+    "category": "Skin",
+    "quick": "Raw honey topically, aloe vera, vitamin C, zinc, collagen",
+    "recommendations": [
+      { "name": "Raw Honey", "why": "Manuka honey is FDA-approved for wound care, antimicrobial and promotes tissue repair", "link": "/honey/natures-antibiotic" },
+      { "name": "Aloe Vera", "why": "Accelerates wound closure and reduces scarring", "link": "/aloe-vera/healing-plant" },
+      { "name": "Vitamin C", "why": "Essential for collagen synthesis and tissue repair", "link": "/vitamin-c/immune-and-beyond" },
+      { "name": "Zinc", "why": "Critical mineral for cell division and wound closure", "link": "/zinc/zinc-basics" },
+      { "name": "Collagen", "why": "Provides building blocks for new tissue formation", "link": "/collagen/sources-and-supplementation" }
+    ]
+  },
+  {
+    "condition": "Sunburn",
+    "category": "Skin",
+    "quick": "Aloe vera, raw honey, coconut oil, astaxanthin (preventive), cold compress",
+    "recommendations": [
+      { "name": "Aloe Vera", "why": "Anti-inflammatory and promotes skin cell regeneration", "link": "/aloe-vera/healing-plant" },
+      { "name": "Astaxanthin", "why": "Internal sunscreen that reduces UV damage when taken daily", "link": "/astaxanthin/the-pink-antioxidant" },
+      { "name": "Coconut Oil", "why": "Moisturizes damaged skin and has mild anti-inflammatory effects", "link": "/coconut-oil/mct-and-lauric-acid" },
+      { "name": "Vitamin C", "why": "Antioxidant that helps neutralize UV-generated free radicals", "link": "/vitamin-c/high-dose-vitamin-c" }
+    ]
+  },
+  {
+    "condition": "Fatigue",
+    "category": "Energy",
+    "quick": "B vitamins, CoQ10, iron (if deficient), electrolytes, sleep optimization, sun exposure",
+    "recommendations": [
+      { "name": "B Vitamins", "why": "Essential cofactors in cellular energy (ATP) production", "link": "/b-vitamins/the-b-complex" },
+      { "name": "CoQ10", "why": "Required for mitochondrial energy production in every cell", "link": "/coq10/coq10-basics" },
+      { "name": "Iron", "why": "Iron deficiency is the most common nutritional cause of fatigue", "link": "/iron/iron-basics" },
+      { "name": "Cordyceps", "why": "Increases oxygen utilization and cellular ATP production", "link": "/mushrooms/cordyceps" },
+      { "name": "Electrolytes", "why": "Even mild dehydration causes significant fatigue", "link": "/electrolytes/beyond-water" }
+    ]
+  },
+  {
+    "condition": "Afternoon Crash",
+    "category": "Energy",
+    "quick": "Matcha instead of coffee, protein-rich lunch, short walk, cold water on face, avoid sugar",
+    "recommendations": [
+      { "name": "Matcha", "why": "L-theanine + caffeine provides sustained energy without the crash", "link": "/tea/matcha" },
+      { "name": "Zone 2 Cardio", "why": "Improves mitochondrial efficiency so you produce energy more consistently", "link": "/zone-2-cardio/mitochondrial-fitness" },
+      { "name": "Berberine", "why": "Stabilizes blood sugar to prevent post-meal energy dips", "link": "/berberine/berberine-basics" },
+      { "name": "Walking", "why": "A 10-minute walk after lunch prevents the post-meal slump", "link": "/walking/most-underrated-exercise" },
+      { "name": "Cinnamon", "why": "Slows glucose absorption to prevent blood sugar spikes and crashes", "link": "/cinnamon/blood-sugar-benefits" }
+    ]
+  },
+  {
+    "condition": "Low Motivation",
+    "category": "Energy",
+    "quick": "Cold exposure, sunlight first thing, rhodiola, resistance training, dopamine reset",
+    "recommendations": [
+      { "name": "Cold Exposure", "why": "Cold water triggers a 250% increase in dopamine that lasts hours", "link": "/cold-exposure/brown-fat-and-metabolism" },
+      { "name": "Sunlight", "why": "Morning sunlight sets dopamine and cortisol rhythms", "link": "/sunlight/more-than-vitamin-d" },
+      { "name": "Rhodiola", "why": "Adaptogen that combats mental fatigue and improves motivation", "link": "/rhodiola/stress-and-fatigue" },
+      { "name": "Resistance Training", "why": "Exercise increases dopamine receptor density", "link": "/resistance-training/why-lift" },
+      { "name": "Digital Detox", "why": "Constant stimulation depletes dopamine baseline", "link": "/digital-detox/reclaiming-attention" }
+    ]
+  },
+  {
+    "condition": "PMS",
+    "category": "Hormonal",
+    "quick": "Magnesium, seed cycling, vitex/chasteberry, omega-3s, reduce xenoestrogens",
+    "recommendations": [
+      { "name": "Magnesium", "why": "Reduces PMS symptoms across the board -- mood, cramps, water retention", "link": "/magnesium/types-of-magnesium" },
+      { "name": "Seed Cycling", "why": "Supports estrogen and progesterone balance through cycle phases", "link": "/seed-cycling/hormonal-support" },
+      { "name": "Omega-3s", "why": "Anti-inflammatory effects reduce PMS pain and mood symptoms", "link": "/omega-3/sources-and-dosing" },
+      { "name": "Xenoestrogen Avoidance", "why": "Environmental estrogens worsen hormonal PMS symptoms", "link": "/hormone-balance/xenoestrogens" },
+      { "name": "Inositol", "why": "Myo-inositol improves hormonal signaling and mood", "link": "/inositol/myo-inositol" }
+    ]
+  },
+  {
+    "condition": "Hot Flashes",
+    "category": "Hormonal",
+    "quick": "Black cohosh, maca, sage tea, flaxseeds, reduce sugar and alcohol",
+    "recommendations": [
+      { "name": "Seed Cycling", "why": "Phytoestrogens in flax and sesame help balance declining estrogen", "link": "/seed-cycling/hormonal-support" },
+      { "name": "Ashwagandha", "why": "Balances hormones and reduces stress that exacerbates hot flashes", "link": "/ashwagandha/evidence-and-dosing" },
+      { "name": "Sage Tea", "why": "Traditional remedy shown to reduce hot flash frequency by 50%", "link": "/tea/tea-and-health" },
+      { "name": "Adrenal Support", "why": "Adrenals take over hormone production post-menopause", "link": "/adrenal-health/hpa-axis" },
+      { "name": "Xenoestrogen Avoidance", "why": "Chemical estrogens disrupt already-fluctuating hormone levels", "link": "/hormone-balance/xenoestrogens" }
+    ]
+  },
+  {
+    "condition": "Low Testosterone",
+    "category": "Hormonal",
+    "quick": "Resistance training, zinc, vitamin D, sleep optimization, reduce xenoestrogens",
+    "recommendations": [
+      { "name": "Resistance Training", "why": "Compound lifts are the single most effective natural testosterone booster", "link": "/resistance-training/why-lift" },
+      { "name": "Zinc", "why": "Essential for testosterone synthesis, widely deficient in modern diets", "link": "/zinc/immune-and-hormones" },
+      { "name": "Vitamin D", "why": "Functions as a hormone precursor; deficiency tanks testosterone", "link": "/vitamin-d/supplementation" },
+      { "name": "Sleep", "why": "Testosterone is primarily produced during deep sleep", "link": "/sleep/why-sleep-matters" },
+      { "name": "Ashwagandha", "why": "Shown to increase testosterone by 15-17% in clinical trials", "link": "/ashwagandha/evidence-and-dosing" }
+    ]
+  },
+  {
+    "condition": "Thyroid Sluggish",
+    "category": "Hormonal",
+    "quick": "Iodine, selenium, zinc, reduce goitrogens, support liver detox pathways",
+    "recommendations": [
+      { "name": "Thyroid Health", "why": "Understanding the master gland is essential for targeted support", "link": "/thyroid-health/the-master-gland" },
+      { "name": "Iodine", "why": "The thyroid cannot produce hormones without adequate iodine", "link": "/iodine/thyroid-essential" },
+      { "name": "Selenium", "why": "Required for T4-to-T3 conversion, the active thyroid hormone", "link": "/selenium/the-narrow-window" },
+      { "name": "Zinc", "why": "Necessary for thyroid hormone synthesis and receptor function", "link": "/zinc/zinc-basics" },
+      { "name": "Liver Support", "why": "The liver converts 60% of T4 to active T3", "link": "/liver-cleansing/supporting-detox-pathways" }
+    ]
+  },
+  {
+    "condition": "Candida/Yeast",
+    "category": "Gut",
+    "quick": "Oregano oil, garlic, coconut oil, eliminate sugar, probiotics (S. boulardii)",
+    "recommendations": [
+      { "name": "Oregano Oil", "why": "Carvacrol and thymol are potent antifungals that disrupt candida biofilms", "link": "/oregano-oil/carvacrol" },
+      { "name": "Garlic", "why": "Allicin has direct antifungal activity against candida species", "link": "/garlic/antimicrobial" },
+      { "name": "Coconut Oil", "why": "Caprylic acid and lauric acid penetrate and kill candida cells", "link": "/coconut-oil/mct-and-lauric-acid" },
+      { "name": "Probiotics", "why": "Saccharomyces boulardii and lactobacillus strains crowd out yeast", "link": "/probiotics/strains-that-matter" },
+      { "name": "Berberine", "why": "Antifungal properties and helps starve candida by lowering blood sugar", "link": "/berberine/berberine-basics" }
+    ]
+  },
+  {
+    "condition": "Parasites",
+    "category": "Gut",
+    "quick": "Wormwood, black walnut hull, cloves, oregano oil, diatomaceous earth",
+    "recommendations": [
+      { "name": "Parasite Cleansing Protocol", "why": "Structured approach using traditional antiparasitic herbs", "link": "/parasite-cleansing/protocols" },
+      { "name": "Wormwood", "why": "Artemisinin is a potent antiparasitic used for centuries", "link": "/wormwood/artemisinin" },
+      { "name": "Black Walnut Hull", "why": "Juglone kills parasites and their eggs", "link": "/black-walnut-hull/juglone-and-parasites" },
+      { "name": "Cloves", "why": "Eugenol destroys parasite eggs that other herbs miss", "link": "/cloves/eugenol-benefits" },
+      { "name": "Diatomaceous Earth", "why": "Food-grade DE physically damages parasites in the digestive tract", "link": "/diatomaceous-earth/food-grade-de" }
+    ]
+  },
+  {
+    "condition": "Leaky Gut",
+    "category": "Gut",
+    "quick": "Bone broth, L-glutamine, zinc carnosine, probiotics, eliminate gluten and seed oils",
+    "recommendations": [
+      { "name": "Leaky Gut Healing", "why": "Understanding intestinal permeability is the first step to healing", "link": "/leaky-gut/intestinal-permeability" },
+      { "name": "Bone Broth", "why": "L-glutamine, gelatin, and glycine repair the gut lining", "link": "/bone-broth/liquid-gold" },
+      { "name": "Zinc", "why": "Zinc carnosine directly repairs tight junctions in the gut wall", "link": "/zinc/zinc-basics" },
+      { "name": "Probiotics", "why": "Beneficial bacteria strengthen the gut barrier", "link": "/probiotics/food-vs-supplements" },
+      { "name": "Collagen", "why": "Provides amino acids (glycine, proline) needed for gut lining repair", "link": "/collagen/types-and-benefits" }
+    ]
+  },
+  {
+    "condition": "Food Sensitivities",
+    "category": "Gut",
+    "quick": "Heal leaky gut first, digestive enzymes, elimination diet, probiotics, reduce inflammation",
+    "recommendations": [
+      { "name": "Leaky Gut Healing", "why": "Food sensitivities are usually a symptom of intestinal permeability", "link": "/leaky-gut/healing-the-gut" },
+      { "name": "Probiotics", "why": "Restoring gut flora diversity reduces immune overreaction to foods", "link": "/probiotics/gut-microbiome" },
+      { "name": "Anti-Inflammatory Foods", "why": "Calming systemic inflammation reduces sensitivity reactions", "link": "/anti-inflammatory-foods/chronic-inflammation" },
+      { "name": "Bone Broth", "why": "Supports gut lining repair so proteins stop leaking into bloodstream", "link": "/bone-broth/liquid-gold" },
+      { "name": "Liver Support", "why": "An overburdened liver cannot process food antigens properly", "link": "/liver-cleansing/supporting-detox-pathways" }
+    ]
+  }
+]

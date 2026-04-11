@@ -1,0 +1,16 @@
+---
+import CategoryPage from '../../components/CategoryPage.astro';
+
+const subcategories = [
+  { name: 'Hidden Dangers in Food', slugs: ['seed-oils', 'food-additives', 'artificial-sweeteners', 'farm-raised-fish', 'lectins'] },
+  { name: 'Personal Care & Beauty', slugs: ['sunscreen', 'personal-care-products'] },
+  { name: 'Your Home', slugs: ['household-chemicals', 'indoor-air-quality', 'water-filtration', 'mattresses-&-furniture', 'non-stick-cookware'] },
+  { name: 'Environmental Toxins', slugs: ['microplastics', 'pfas-(forever-chemicals)', 'glyphosate-(roundup)', 'fluoride', 'mold', 'emf'] },
+];
+---
+
+<CategoryPage
+  title="What's Harming You"
+  description="Hidden dangers in your food, personal care products, home, and environment — and what to do about them."
+  subcategories={subcategories}
+/>

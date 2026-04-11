@@ -4,209 +4,318 @@ import { getCollection } from 'astro:content';
 
 const allSubtopics = await getCollection('topics');
 
-// Group subtopics by topic name
-const topicMap = new Map<string, { slug: string; description: string; subtopicCount: number }>();
-
+// Count total topics and articles
+const topicSet = new Set<string>();
 for (const entry of allSubtopics) {
-  const topicName = entry.data.topic;
-  const slug = topicName.toLowerCase().replace(/\s+/g, '-');
-
-  if (!topicMap.has(topicName)) {
-    topicMap.set(topicName, { slug, description: '', subtopicCount: 0 });
-  }
-
-  const topic = topicMap.get(topicName)!;
-  topic.subtopicCount++;
-
-  if (topic.subtopicCount === 1 || entry.data.order === 1) {
-    topic.description = entry.data.description;
-  }
+  topicSet.add(entry.data.topic);
 }
 
-const topics = Array.from(topicMap.entries()).map(([name, data]) => ({ name, ...data }));
-
-// Define categories and assign topics
-const categories = [
+const entryPoints = [
   {
-    name: 'Hidden Dangers in Food',
-    description: 'What\'s really in your food and why it matters.',
-    slugs: ['seed-oils', 'food-additives', 'artificial-sweeteners', 'farm-raised-fish', 'lectins'],
+    name: "What's Good For You",
+    description: 'Supplements, foods, herbs, mushrooms, teas, and natural compounds backed by research.',
+    href: '/explore/good-for-you',
+    count: '80+ topics',
+    icon: '&#x1f331;',
   },
   {
-    name: 'Supplements & Natural Compounds',
-    description: 'What the science says about popular supplements and natural compounds.',
-    slugs: ['turmeric', 'omega-3-fatty-acids', 'vitamin-d', 'vitamin-c', 'vitamin-k2', 'b-vitamins', 'magnesium', 'zinc', 'iodine', 'selenium', 'ashwagandha', 'probiotics', 'creatine', 'collagen', 'coq10', 'nac', 'berberine', 'melatonin', 'resveratrol'],
+    name: "What's Harming You",
+    description: "Hidden dangers in food, personal care, your home, and the environment.",
+    href: '/explore/harming-you',
+    count: '30+ topics',
+    icon: '&#x26a0;',
   },
   {
-    name: 'Foods & Drinks',
-    description: 'How what you eat and drink affects your health.',
-    slugs: ['tea', 'anti-inflammatory-foods', 'medicinal-mushrooms', 'olive-oil', 'bone-broth', 'honey', 'apple-cider-vinegar', 'fermented-foods', 'eggs', 'berries', 'dark-chocolate', 'nuts-and-seeds', 'coconut-oil', 'organ-meats', 'grass-fed-meat', 'raw-milk'],
+    name: 'Your Body',
+    description: 'How your immune system, hormones, and organs actually work — and what medicine gets right and wrong.',
+    href: '/explore/your-body',
+    count: '20+ topics',
+    icon: '&#x1f9ec;',
   },
   {
-    name: 'Herbs & Spices',
-    description: 'Nature\'s medicine cabinet — the research behind everyday herbs and spices.',
-    slugs: ['garlic', 'onions', 'ginger', 'cinnamon', 'oregano-oil', 'black-seed-oil', 'elderberry', 'moringa', 'wormwood', 'cloves'],
+    name: 'How to Live',
+    description: 'Exercise, sleep, fasting, breathwork, and daily practices for a healthier life.',
+    href: '/explore/how-to-live',
+    count: '25+ topics',
+    icon: '&#x2600;',
   },
   {
-    name: 'Therapeutic Practices',
-    description: 'Evidence-based therapies and healing modalities.',
-    slugs: ['sauna', 'cold-exposure', 'prp', 'red-light-therapy', 'grounding', 'dry-brushing', 'oil-pulling', 'acupuncture', 'massage', 'forest-bathing'],
+    name: 'Detox & Heal',
+    description: 'Supporting your body\'s natural ability to cleanse, recover, and restore.',
+    href: '/explore/detox-and-heal',
+    count: '15+ topics',
+    icon: '&#x1f4a7;',
   },
   {
-    name: 'Exercise & Movement',
-    description: 'Move your body — the research on what works and how much you need.',
-    slugs: ['resistance-training', 'walking', 'zone-2-cardio', 'stretching-mobility', 'rebounding'],
-  },
-  {
-    name: 'Detox & Cleansing',
-    description: 'Supporting your body\'s natural detoxification pathways.',
-    slugs: ['parasite-cleansing', 'liver-cleansing', 'heavy-metal-detox', 'spirulina-chlorella', 'activated-charcoal', 'bentonite-clay', 'diatomaceous-earth', 'black-walnut-hull', 'milk-thistle', 'dandelion-root'],
-  },
-  {
-    name: 'Skin & Body Care',
-    description: 'Natural alternatives for what you put on your body.',
-    slugs: ['castor-oil', 'tallow', 'aloe-vera', 'sunscreen', 'personal-care-products'],
-  },
-  {
-    name: 'Your Home',
-    description: 'What\'s in your air, water, furniture, and cleaning products.',
-    slugs: ['household-chemicals', 'indoor-air-quality', 'water-filtration', 'mattresses-&-furniture', 'non-stick-cookware'],
-  },
-  {
-    name: 'Environmental Toxins',
-    description: 'The invisible chemicals accumulating in your body and environment.',
-    slugs: ['microplastics', 'pfas-(forever-chemicals)', 'glyphosate-(roundup)', 'fluoride', 'mold', 'emf'],
-  },
-  {
-    name: 'Medicine & Your Body',
-    description: 'What your body can do on its own, what medications actually do, and how to be your own advocate.',
-    slugs: ['immune-system', 'antibiotics', 'pharmaceutical-side-effects', 'birth-control', 'natural-anti-inflammatories', 'essential-oils'],
-  },
-  {
-    name: 'Body Systems',
-    description: 'Understanding and supporting your body\'s core systems.',
-    slugs: ['thyroid-health', 'hormone-balance', 'adrenal-health', 'leaky-gut', 'dental-health', 'eye-health', 'seed-cycling'],
-  },
-  {
-    name: 'Wellness & Lifestyle',
-    description: 'Building healthy habits backed by research.',
-    slugs: ['sleep', 'mouth-breathing', 'intermittent-fasting', 'meditation-breathwork', 'vagus-nerve', 'sunlight', 'electrolytes', 'posture', 'digital-detox', 'journaling'],
+    name: 'Skin & Self Care',
+    description: 'Natural alternatives for what you put on your body, from skincare to dental health.',
+    href: '/explore/skin-and-self-care',
+    count: '10+ topics',
+    icon: '&#x2728;',
   },
 ];
-
-// Build category data with matched topics
-const categoryData = categories.map((cat) => ({
-  ...cat,
-  topics: cat.slugs
-    .map((s) => topics.find((t) => t.slug === s))
-    .filter(Boolean),
-}));
 ---
 
 <Base title="What's Healthy and Why">
-  <div class="site-intro">
+  <div class="home-hero">
     <h1>What's Healthy and Why</h1>
-    <p>Peer-reviewed health research, explained at the depth you want. Every claim is cited. Every source is real.</p>
-    <a href="/levels" class="levels-banner">New here? Start with our 5-level health journey &rarr;</a>
+    <p>Peer-reviewed health research, explained at the depth you want.<br />Every claim is cited. Every source is real.</p>
+    <div class="home-actions">
+      <a href="/levels" class="levels-banner">Start your health journey &rarr;</a>
+      <a href="/lookup" class="lookup-banner">What should I take for...?</a>
+    </div>
   </div>
 
-  <div class="categories-grid">
-    {categoryData.map((cat, i) => (
-      <details class="category-card" open={i === 0}>
-        <summary class="category-summary">
-          <div>
-            <h2>{cat.name}</h2>
-            <p>{cat.description}</p>
-          </div>
-          <span class="category-count">{cat.topics.length} topics</span>
-        </summary>
-        <div class="topic-grid">
-          {cat.topics.map((topic: any) => (
-            <a href={`/${topic.slug}`} class="topic-card">
-              <h3>{topic.name}</h3>
-              <p>{topic.description}</p>
-              <span class="topic-count">{topic.subtopicCount} {topic.subtopicCount === 1 ? 'article' : 'articles'}</span>
-            </a>
-          ))}
-        </div>
-      </details>
+  <div class="entry-grid">
+    {entryPoints.map((ep) => (
+      <a href={ep.href} class="entry-card">
+        <span class="entry-icon" set:html={ep.icon} />
+        <h2>{ep.name}</h2>
+        <p>{ep.description}</p>
+        <span class="entry-count">{ep.count}</span>
+      </a>
     ))}
+  </div>
+
+  <div class="home-search">
+    <h2>Looking for something specific?</h2>
+    <input
+      type="search"
+      id="home-search"
+      placeholder="Search topics... (e.g. turmeric, sleep, PFAS, vitamin D)"
+      autocomplete="off"
+    />
+    <div id="search-results" class="search-results"></div>
   </div>
 </Base>
 
+<script define:vars={{ allTopicNames: Array.from(topicSet).map(name => ({
+  name,
+  slug: name.toLowerCase().replace(/\s+/g, '-'),
+})) }}>
+  const input = document.getElementById('home-search');
+  const results = document.getElementById('search-results');
+  const topics = allTopicNames;
+
+  input.addEventListener('input', () => {
+    const q = input.value.toLowerCase().trim();
+    if (q.length < 2) {
+      results.innerHTML = '';
+      results.style.display = 'none';
+      return;
+    }
+
+    const matches = topics.filter(t => t.name.toLowerCase().includes(q)).slice(0, 8);
+
+    if (matches.length === 0) {
+      results.innerHTML = '<div class="search-empty">No topics found</div>';
+      results.style.display = 'block';
+      return;
+    }
+
+    results.innerHTML = matches.map(t =>
+      `<a href="/${t.slug}" class="search-item">${t.name}</a>`
+    ).join('');
+    results.style.display = 'block';
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.home-search')) {
+      results.style.display = 'none';
+    }
+  });
+</script>
+
 <style>
-  .categories-grid {
-    display: grid;
-    gap: var(--space-md);
+  .home-hero {
+    text-align: center;
+    padding: var(--space-2xl) 0 var(--space-3xl);
   }
 
-  .category-card {
+  .home-hero h1 {
+    font-size: 2.5rem;
+    margin-bottom: var(--space-sm);
+  }
+
+  .home-hero p {
+    font-size: 1.1rem;
+    color: var(--color-text-muted);
+    max-width: 32rem;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  .home-actions {
+    margin-top: var(--space-xl);
+    display: flex;
+    gap: var(--space-md);
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .home-actions a {
+    padding: var(--space-sm) var(--space-xl);
+    border-radius: var(--radius);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .levels-banner {
+    background: var(--color-accent);
+    color: white !important;
+  }
+
+  .levels-banner:hover {
+    background: var(--color-accent-hover);
+    text-decoration: none !important;
+  }
+
+  .lookup-banner {
+    background: transparent;
+    border: 1px solid var(--color-accent);
+    color: var(--color-accent) !important;
+  }
+
+  .lookup-banner:hover {
+    background: var(--color-accent-light);
+    text-decoration: none !important;
+  }
+
+  .entry-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-lg);
+    margin-bottom: var(--space-3xl);
+  }
+
+  .entry-card {
+    display: block;
+    padding: var(--space-xl);
     background: var(--color-surface);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
-    overflow: hidden;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    position: relative;
   }
 
-  .category-summary {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: var(--space-lg) var(--space-xl);
-    cursor: pointer;
-    list-style: none;
-    user-select: none;
-    transition: background 0.15s ease;
+  .entry-card:hover {
+    border-color: var(--color-accent);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    text-decoration: none;
+    transform: translateY(-2px);
   }
 
-  .category-summary::-webkit-details-marker {
-    display: none;
+  .entry-icon {
+    font-size: 1.8rem;
+    display: block;
+    margin-bottom: var(--space-sm);
   }
 
-  .category-summary::marker {
-    display: none;
-    content: '';
+  .entry-card h2 {
+    font-size: 1.2rem;
+    margin: 0 0 var(--space-sm) 0;
+    color: var(--color-text);
   }
 
-  .category-summary:hover {
-    background: var(--color-bg);
-  }
-
-  .category-summary h2 {
-    font-size: 1.15rem;
-    margin: 0 0 2px 0;
-  }
-
-  .category-summary p {
+  .entry-card p {
     margin: 0;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     color: var(--color-text-muted);
+    line-height: 1.5;
   }
 
-  .category-count {
-    flex-shrink: 0;
+  .entry-count {
+    display: inline-block;
+    margin-top: var(--space-md);
     font-size: 0.75rem;
     color: var(--color-text-light);
     background: var(--color-bg);
     padding: 2px 10px;
     border-radius: 999px;
-    margin-left: var(--space-md);
   }
 
-  .category-card[open] .category-summary {
+  .home-search {
+    max-width: 28rem;
+    margin: 0 auto;
+    text-align: center;
+    padding-bottom: var(--space-2xl);
+    position: relative;
+  }
+
+  .home-search h2 {
+    font-size: 1.1rem;
+    margin-bottom: var(--space-md);
+  }
+
+  .home-search input {
+    width: 100%;
+    padding: var(--space-sm) var(--space-lg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    background: var(--color-surface);
+    color: var(--color-text);
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+
+  .home-search input:focus {
+    border-color: var(--color-accent);
+  }
+
+  .search-results {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    z-index: 10;
+    text-align: left;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .search-item {
+    display: block;
+    padding: var(--space-sm) var(--space-lg);
+    color: var(--color-text);
+    text-decoration: none;
+    font-size: 0.9rem;
     border-bottom: 1px solid var(--color-border-light);
   }
 
-  .category-card .topic-grid {
-    padding: var(--space-md) var(--space-lg) var(--space-lg);
+  .search-item:hover {
+    background: var(--color-accent-light);
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  .search-empty {
+    padding: var(--space-md) var(--space-lg);
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
   }
 
   @media (max-width: 640px) {
-    .category-summary {
-      padding: var(--space-md);
+    .home-hero h1 {
+      font-size: 1.8rem;
     }
 
-    .category-card .topic-grid {
-      padding: var(--space-sm) var(--space-md) var(--space-md);
+    .entry-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .home-actions {
+      flex-direction: column;
+      align-items: center;
     }
   }
 </style>

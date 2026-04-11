@@ -1,0 +1,16 @@
+---
+import CategoryPage from '../../components/CategoryPage.astro';
+
+const subcategories = [
+  { name: 'Supplements & Vitamins', slugs: ['turmeric', 'omega-3-fatty-acids', 'vitamin-d', 'vitamin-c', 'vitamin-k2', 'b-vitamins', 'magnesium', 'zinc', 'iodine', 'selenium', 'ashwagandha', 'probiotics', 'creatine', 'collagen', 'coq10', 'nac', 'berberine', 'melatonin', 'resveratrol'] },
+  { name: 'Foods & Drinks', slugs: ['tea', 'anti-inflammatory-foods', 'olive-oil', 'bone-broth', 'honey', 'apple-cider-vinegar', 'fermented-foods', 'eggs', 'berries', 'dark-chocolate', 'nuts-and-seeds', 'coconut-oil', 'organ-meats', 'grass-fed-meat', 'raw-milk', 'electrolytes'] },
+  { name: 'Medicinal Mushrooms', slugs: ['medicinal-mushrooms'] },
+  { name: 'Herbs & Spices', slugs: ['garlic', 'onions', 'ginger', 'cinnamon', 'oregano-oil', 'black-seed-oil', 'elderberry', 'moringa', 'wormwood', 'cloves'] },
+];
+---
+
+<CategoryPage
+  title="What's Good For You"
+  description="Supplements, foods, herbs, mushrooms, teas, and natural compounds — all backed by peer-reviewed research."
+  subcategories={subcategories}
+/>

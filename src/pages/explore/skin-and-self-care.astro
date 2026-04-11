@@ -1,0 +1,16 @@
+---
+import CategoryPage from '../../components/CategoryPage.astro';
+
+const subcategories = [
+  { name: 'Natural Skincare', slugs: ['castor-oil', 'tallow', 'aloe-vera', 'coconut-oil'] },
+  { name: 'What to Avoid', slugs: ['sunscreen', 'personal-care-products'] },
+  { name: 'Dental Health', slugs: ['dental-health', 'fluoride', 'oil-pulling'] },
+  { name: 'Medicinal Oils', slugs: ['essential-oils'] },
+];
+---
+
+<CategoryPage
+  title="Skin & Self Care"
+  description="Natural alternatives for what you put on your body — from skincare to dental health to essential oils."
+  subcategories={subcategories}
+/>
