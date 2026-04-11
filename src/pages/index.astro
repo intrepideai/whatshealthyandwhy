@@ -4,7 +4,6 @@ import { getCollection } from 'astro:content';
 
 const allSubtopics = await getCollection('topics');
 
-// Count total topics and articles
 const topicSet = new Set<string>();
 for (const entry of allSubtopics) {
   topicSet.add(entry.data.topic);
@@ -16,42 +15,36 @@ const entryPoints = [
     description: 'Supplements, foods, herbs, mushrooms, teas, and natural compounds backed by research.',
     href: '/explore/good-for-you',
     count: '80+ topics',
-    icon: '&#x1f331;',
   },
   {
     name: "What's Harming You",
     description: "Hidden dangers in food, personal care, your home, and the environment.",
     href: '/explore/harming-you',
     count: '30+ topics',
-    icon: '&#x26a0;',
   },
   {
     name: 'Your Body',
     description: 'How your immune system, hormones, and organs actually work — and what medicine gets right and wrong.',
     href: '/explore/your-body',
     count: '20+ topics',
-    icon: '&#x1f9ec;',
   },
   {
     name: 'How to Live',
     description: 'Exercise, sleep, fasting, breathwork, and daily practices for a healthier life.',
     href: '/explore/how-to-live',
     count: '25+ topics',
-    icon: '&#x2600;',
   },
   {
     name: 'Detox & Heal',
     description: 'Supporting your body\'s natural ability to cleanse, recover, and restore.',
     href: '/explore/detox-and-heal',
     count: '15+ topics',
-    icon: '&#x1f4a7;',
   },
   {
     name: 'Skin & Self Care',
     description: 'Natural alternatives for what you put on your body, from skincare to dental health.',
     href: '/explore/skin-and-self-care',
     count: '10+ topics',
-    icon: '&#x2728;',
   },
 ];
 ---
@@ -63,68 +56,20 @@ const entryPoints = [
     <div class="home-actions">
       <a href="/levels" class="levels-banner">Start your health journey &rarr;</a>
       <a href="/lookup" class="lookup-banner">What should I take for...?</a>
+      <a href="/ask" class="ask-banner">Ask a question</a>
     </div>
   </div>
 
   <div class="entry-grid">
     {entryPoints.map((ep) => (
       <a href={ep.href} class="entry-card">
-        <span class="entry-icon" set:html={ep.icon} />
         <h2>{ep.name}</h2>
         <p>{ep.description}</p>
         <span class="entry-count">{ep.count}</span>
       </a>
     ))}
   </div>
-
-  <div class="home-search">
-    <h2>Looking for something specific?</h2>
-    <input
-      type="search"
-      id="home-search"
-      placeholder="Search topics... (e.g. turmeric, sleep, PFAS, vitamin D)"
-      autocomplete="off"
-    />
-    <div id="search-results" class="search-results"></div>
-  </div>
 </Base>
-
-<script define:vars={{ allTopicNames: Array.from(topicSet).map(name => ({
-  name,
-  slug: name.toLowerCase().replace(/\s+/g, '-'),
-})) }}>
-  const input = document.getElementById('home-search');
-  const results = document.getElementById('search-results');
-  const topics = allTopicNames;
-
-  input.addEventListener('input', () => {
-    const q = input.value.toLowerCase().trim();
-    if (q.length < 2) {
-      results.innerHTML = '';
-      results.style.display = 'none';
-      return;
-    }
-
-    const matches = topics.filter(t => t.name.toLowerCase().includes(q)).slice(0, 8);
-
-    if (matches.length === 0) {
-      results.innerHTML = '<div class="search-empty">No topics found</div>';
-      results.style.display = 'block';
-      return;
-    }
-
-    results.innerHTML = matches.map(t =>
-      `<a href="/${t.slug}" class="search-item">${t.name}</a>`
-    ).join('');
-    results.style.display = 'block';
-  });
-
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('.home-search')) {
-      results.style.display = 'none';
-    }
-  });
-</script>
 
 <style>
   .home-hero {
@@ -172,13 +117,13 @@ const entryPoints = [
     text-decoration: none !important;
   }
 
-  .lookup-banner {
+  .lookup-banner, .ask-banner {
     background: transparent;
     border: 1px solid var(--color-accent);
     color: var(--color-accent) !important;
   }
 
-  .lookup-banner:hover {
+  .lookup-banner:hover, .ask-banner:hover {
     background: var(--color-accent-light);
     text-decoration: none !important;
   }
@@ -187,7 +132,6 @@ const entryPoints = [
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: var(--space-lg);
-    margin-bottom: var(--space-3xl);
   }
 
   .entry-card {
@@ -198,7 +142,6 @@ const entryPoints = [
     border-radius: var(--radius-lg);
     text-decoration: none;
     transition: all 0.2s ease;
-    position: relative;
   }
 
   .entry-card:hover {
@@ -206,12 +149,6 @@ const entryPoints = [
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
     text-decoration: none;
     transform: translateY(-2px);
-  }
-
-  .entry-icon {
-    font-size: 1.8rem;
-    display: block;
-    margin-bottom: var(--space-sm);
   }
 
   .entry-card h2 {
@@ -235,73 +172,6 @@ const entryPoints = [
     background: var(--color-bg);
     padding: 2px 10px;
     border-radius: 999px;
-  }
-
-  .home-search {
-    max-width: 28rem;
-    margin: 0 auto;
-    text-align: center;
-    padding-bottom: var(--space-2xl);
-    position: relative;
-  }
-
-  .home-search h2 {
-    font-size: 1.1rem;
-    margin-bottom: var(--space-md);
-  }
-
-  .home-search input {
-    width: 100%;
-    padding: var(--space-sm) var(--space-lg);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    font-family: var(--font-body);
-    font-size: 0.95rem;
-    background: var(--color-surface);
-    color: var(--color-text);
-    outline: none;
-    transition: border-color 0.15s ease;
-  }
-
-  .home-search input:focus {
-    border-color: var(--color-accent);
-  }
-
-  .search-results {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-    z-index: 10;
-    text-align: left;
-    max-height: 300px;
-    overflow-y: auto;
-  }
-
-  .search-item {
-    display: block;
-    padding: var(--space-sm) var(--space-lg);
-    color: var(--color-text);
-    text-decoration: none;
-    font-size: 0.9rem;
-    border-bottom: 1px solid var(--color-border-light);
-  }
-
-  .search-item:hover {
-    background: var(--color-accent-light);
-    color: var(--color-accent);
-    text-decoration: none;
-  }
-
-  .search-empty {
-    padding: var(--space-md) var(--space-lg);
-    color: var(--color-text-muted);
-    font-size: 0.9rem;
   }
 
   @media (max-width: 640px) {
