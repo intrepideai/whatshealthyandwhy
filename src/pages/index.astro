@@ -55,7 +55,7 @@ const entryPoints = [
     <p>Peer-reviewed health research, explained at the depth you want.<br />Every claim is cited. Every source is real.</p>
     <div class="home-actions">
       <a href="/levels" class="levels-banner">Start your health journey &rarr;</a>
-      <a href="/lookup" class="lookup-banner">What should I take for...?</a>
+      <a href="/lookup" class="lookup-banner">Symptom lookup</a>
       <a href="/ask" class="ask-banner">Ask a question</a>
     </div>
   </div>
@@ -92,40 +92,39 @@ const entryPoints = [
 
   .home-actions {
     margin-top: var(--space-xl);
-    display: flex;
-    gap: var(--space-md);
-    justify-content: center;
-    flex-wrap: wrap;
+    text-align: center;
   }
 
   .home-actions a {
-    padding: var(--space-sm) var(--space-xl);
+    display: inline-block;
+    margin: 0 4px;
+    padding: 8px 16px;
+    border: 1px solid var(--color-accent);
     border-radius: var(--radius);
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 14px;
+    line-height: 1;
     text-decoration: none;
-    transition: all 0.15s ease;
+    vertical-align: middle;
   }
 
   .levels-banner {
     background: var(--color-accent);
-    color: white !important;
+    color: white;
   }
 
   .levels-banner:hover {
     background: var(--color-accent-hover);
-    text-decoration: none !important;
+    border-color: var(--color-accent-hover);
   }
 
   .lookup-banner, .ask-banner {
     background: transparent;
-    border: 1px solid var(--color-accent);
-    color: var(--color-accent) !important;
+    color: var(--color-accent);
   }
 
   .lookup-banner:hover, .ask-banner:hover {
     background: var(--color-accent-light);
-    text-decoration: none !important;
   }
 
   .entry-grid {
@@ -183,9 +182,9 @@ const entryPoints = [
       grid-template-columns: 1fr;
     }
 
-    .home-actions {
-      flex-direction: column;
-      align-items: center;
+    .home-actions a {
+      display: block;
+      margin: 4px auto;
     }
   }
 </style>
