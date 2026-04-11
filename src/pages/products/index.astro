@@ -1,0 +1,190 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const allProducts = await getCollection('products');
+
+// Group by category
+const categoryMap = new Map<string, typeof allProducts>();
+for (const product of allProducts) {
+  const cat = product.data.category;
+  if (!categoryMap.has(cat)) {
+    categoryMap.set(cat, []);
+  }
+  categoryMap.get(cat)!.push(product);
+}
+
+const categories = Array.from(categoryMap.entries()).map(([name, products]) => ({
+  name,
+  products,
+}));
+---
+
+<Base title="Products We Trust" description="Independently vetted products held to the highest standards. Never sponsored.">
+  <div class="products-intro">
+    <a href="/" class="back-link">&larr; Home</a>
+    <h1>Products We Trust</h1>
+    <p>Every product on this page has been independently vetted. Nothing here is sponsored, paid for, or influenced by any brand. We recommend these because they meet our standards — not because anyone asked us to.</p>
+    <div class="trust-badge">
+      <strong>Our standards:</strong> Independently tested &middot; No sponsorships &middot; No affiliate deals &middot; Highest quality ingredients &middot; Transparent sourcing
+    </div>
+  </div>
+
+  {categories.map((cat) => (
+    <section class="product-category">
+      <h2>{cat.name}</h2>
+      <div class="product-grid">
+        {cat.products.map((product) => (
+          <a href={`/products/${product.id}`} class="product-card">
+            <div class="product-image">
+              <img src={product.data.image} alt={product.data.name} loading="lazy" />
+            </div>
+            <div class="product-info">
+              <span class="product-brand">{product.data.brand}</span>
+              <h3>{product.data.name}</h3>
+              {product.data.certifications && (
+                <div class="product-certs">
+                  {product.data.certifications.map((cert: string) => (
+                    <span class="cert-badge">{cert}</span>
+                  ))}
+                </div>
+              )}
+              <div class="product-meta">
+                {product.data.size && <span>{product.data.size}</span>}
+                {product.data.origin && <span>&middot; {product.data.origin}</span>}
+              </div>
+              <span class="product-price">{product.data.price}</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+  ))}
+</Base>
+
+<style>
+  .products-intro {
+    margin-bottom: var(--space-2xl);
+  }
+
+  .products-intro h1 {
+    margin-bottom: var(--space-sm);
+  }
+
+  .products-intro > p {
+    color: var(--color-text-muted);
+    font-size: 1.05rem;
+    max-width: 38rem;
+  }
+
+  .trust-badge {
+    margin-top: var(--space-md);
+    padding: var(--space-sm) var(--space-lg);
+    background: var(--color-accent-light);
+    border-radius: var(--radius);
+    font-size: 0.85rem;
+    color: var(--color-accent);
+    display: inline-block;
+  }
+
+  .product-category {
+    margin-bottom: var(--space-3xl);
+  }
+
+  .product-category h2 {
+    margin-bottom: var(--space-lg);
+  }
+
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-lg);
+  }
+
+  .product-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .product-card:hover {
+    border-color: var(--color-accent);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    text-decoration: none;
+  }
+
+  .product-image {
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: #f5f5f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .product-info {
+    padding: var(--space-lg);
+  }
+
+  .product-brand {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-light);
+    display: block;
+    margin-bottom: var(--space-xs);
+  }
+
+  .product-info h3 {
+    font-size: 1.05rem;
+    margin: 0 0 var(--space-sm) 0;
+    color: var(--color-text);
+    line-height: 1.3;
+  }
+
+  .product-certs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-sm);
+  }
+
+  .cert-badge {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    background: var(--color-accent-light);
+    color: var(--color-accent);
+    border-radius: 999px;
+    font-weight: 600;
+  }
+
+  .product-meta {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-sm);
+  }
+
+  .product-price {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--color-text);
+  }
+
+  @media (max-width: 640px) {
+    .product-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
