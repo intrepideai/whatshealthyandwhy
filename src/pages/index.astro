@@ -1,0 +1,100 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const allSubtopics = await getCollection('topics');
+
+// Group subtopics by topic name
+const topicMap = new Map<string, { slug: string; description: string; subtopicCount: number }>();
+
+for (const entry of allSubtopics) {
+  const topicName = entry.data.topic;
+  const slug = topicName.toLowerCase().replace(/\s+/g, '-');
+
+  if (!topicMap.has(topicName)) {
+    topicMap.set(topicName, { slug, description: '', subtopicCount: 0 });
+  }
+
+  const topic = topicMap.get(topicName)!;
+  topic.subtopicCount++;
+
+  if (topic.subtopicCount === 1 || entry.data.order === 1) {
+    topic.description = entry.data.description;
+  }
+}
+
+const topics = Array.from(topicMap.entries()).map(([name, data]) => ({ name, ...data }));
+
+// Define categories and assign topics
+const categories = [
+  {
+    name: 'Hidden Dangers in Food',
+    description: 'What\'s really in your food and why it matters.',
+    slugs: ['seed-oils', 'food-additives', 'artificial-sweeteners', 'farm-raised-fish'],
+  },
+  {
+    name: 'Supplements & Natural Compounds',
+    description: 'What the science says about popular supplements and natural compounds.',
+    slugs: ['turmeric', 'omega-3-fatty-acids', 'vitamin-d', 'magnesium', 'ashwagandha', 'probiotics', 'creatine'],
+  },
+  {
+    name: 'Foods & Drinks',
+    description: 'How what you eat and drink affects your health.',
+    slugs: ['tea', 'anti-inflammatory-foods', 'medicinal-mushrooms'],
+  },
+  {
+    name: 'Personal Care & Beauty',
+    description: 'What\'s in the products you put on your body every day.',
+    slugs: ['sunscreen', 'personal-care-products', 'non-stick-cookware'],
+  },
+  {
+    name: 'Your Home',
+    description: 'What\'s in your air, water, furniture, and cleaning products.',
+    slugs: ['household-chemicals', 'indoor-air-quality', 'water-filtration', 'mattresses-&-furniture'],
+  },
+  {
+    name: 'Environmental Toxins',
+    description: 'The invisible chemicals accumulating in your body and environment.',
+    slugs: ['microplastics', 'pfas-(forever-chemicals)', 'glyphosate-(roundup)'],
+  },
+  {
+    name: 'Wellness & Lifestyle',
+    description: 'Building healthy habits backed by research.',
+    slugs: ['sleep', 'mouth-breathing'],
+  },
+];
+
+// Build category data with matched topics
+const categoryData = categories.map((cat) => ({
+  ...cat,
+  topics: cat.slugs
+    .map((s) => topics.find((t) => t.slug === s))
+    .filter(Boolean),
+}));
+---
+
+<Base title="What's Healthy and Why">
+  <div class="site-intro">
+    <h1>What's Healthy and Why</h1>
+    <p>Peer-reviewed health research, explained at the depth you want. Every claim is cited. Every source is real.</p>
+    <a href="/levels" class="levels-banner">New here? Start with our 5-level health journey &rarr;</a>
+  </div>
+
+  {categoryData.map((cat) => (
+    <section class="category-section">
+      <div class="category-header">
+        <h2>{cat.name}</h2>
+        <p>{cat.description}</p>
+      </div>
+      <div class="topic-grid">
+        {cat.topics.map((topic: any) => (
+          <a href={`/${topic.slug}`} class="topic-card">
+            <h3>{topic.name}</h3>
+            <p>{topic.description}</p>
+            <span class="topic-count">{topic.subtopicCount} {topic.subtopicCount === 1 ? 'article' : 'articles'}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+  ))}
+</Base>

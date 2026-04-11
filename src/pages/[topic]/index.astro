@@ -1,0 +1,52 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const allSubtopics = await getCollection('topics');
+
+  const topicGroups = new Map<string, typeof allSubtopics>();
+  for (const entry of allSubtopics) {
+    const slug = entry.data.topic.toLowerCase().replace(/\s+/g, '-');
+    if (!topicGroups.has(slug)) {
+      topicGroups.set(slug, []);
+    }
+    topicGroups.get(slug)!.push(entry);
+  }
+
+  return Array.from(topicGroups.entries()).map(([slug, subtopics]) => ({
+    params: { topic: slug },
+    props: {
+      topicName: subtopics[0].data.topic,
+      subtopics: subtopics.sort((a, b) => a.data.order - b.data.order),
+    },
+  }));
+}
+
+const { topicName, subtopics } = Astro.props;
+const topicSlug = Astro.params.topic;
+
+function getSubtopicSlug(id: string) {
+  // Content collection IDs look like "turmeric/curcumin" — grab the last segment
+  const parts = id.split('/');
+  return parts[parts.length - 1];
+}
+---
+
+<Base title={topicName} description={`Research-backed information about ${topicName}`}>
+  <div class="topic-header">
+    <a href="/" class="back-link">&larr; All Topics</a>
+    <h1>{topicName}</h1>
+    <p class="topic-intro">{subtopics.length} {subtopics.length === 1 ? 'article' : 'articles'} with peer-reviewed research</p>
+  </div>
+
+  <div class="subtopic-grid">
+    {subtopics.map((st: any) => (
+      <a href={`/${topicSlug}/${getSubtopicSlug(st.id)}`} class="subtopic-card">
+        <h2>{st.data.title}</h2>
+        <p>{st.data.description}</p>
+        <span class="card-arrow">&rarr;</span>
+      </a>
+    ))}
+  </div>
+</Base>

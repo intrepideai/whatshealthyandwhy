@@ -1,0 +1,73 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProgressiveDisclosure from '../../components/ProgressiveDisclosure.astro';
+import References from '../../components/References.astro';
+import { getCollection } from 'astro:content';
+import { marked } from 'marked';
+
+export async function getStaticPaths() {
+  const allSubtopics = await getCollection('topics');
+
+  return allSubtopics.map((entry) => {
+    const topicSlug = entry.data.topic.toLowerCase().replace(/\s+/g, '-');
+    const parts = entry.id.split('/');
+    const subtopicSlug = parts[parts.length - 1];
+
+    return {
+      params: { topic: topicSlug, subtopic: subtopicSlug },
+      props: { entry },
+    };
+  });
+}
+
+const { entry } = Astro.props;
+const topicSlug = Astro.params.topic;
+
+function splitContent(body: string) {
+  const moreMarker = '<!-- more -->';
+  const researchMarker = '<!-- research -->';
+
+  let simple = body;
+  let medium = '';
+  let deep = '';
+
+  const moreIdx = body.indexOf(moreMarker);
+  if (moreIdx !== -1) {
+    simple = body.slice(0, moreIdx);
+    const rest = body.slice(moreIdx + moreMarker.length);
+
+    const researchIdx = rest.indexOf(researchMarker);
+    if (researchIdx !== -1) {
+      medium = rest.slice(0, researchIdx);
+      deep = rest.slice(researchIdx + researchMarker.length);
+    } else {
+      medium = rest;
+    }
+  }
+
+  return {
+    simple: marked.parse(simple.trim()) as string,
+    medium: marked.parse(medium.trim()) as string,
+    deep: marked.parse(deep.trim()) as string,
+  };
+}
+
+const { simple, medium, deep } = splitContent(entry.body || '');
+---
+
+<Base title={entry.data.title} description={entry.data.description}>
+  <div class="subtopic-header">
+    <a href={`/${topicSlug}`} class="back-link">&larr; {entry.data.topic}</a>
+    <h1>{entry.data.title}</h1>
+    <p class="subtopic-description">{entry.data.description}</p>
+  </div>
+
+  <ProgressiveDisclosure
+    simple={simple}
+    medium={medium}
+    deep={deep}
+    subtopicId={entry.id}
+  />
+
+  <References references={entry.data.references} />
+</Base>

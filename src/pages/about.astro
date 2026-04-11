@@ -1,0 +1,80 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="About Us" description="Our mission, methodology, and commitment to transparency.">
+  <div class="about-page">
+    <a href="/" class="back-link">&larr; Home</a>
+    <h1>About What's Healthy and Why</h1>
+
+    <section class="about-section">
+      <h2>Our Mission</h2>
+      <p>We believe everyone deserves access to clear, honest health information backed by real science — not marketing, not fear, not someone trying to sell you something.</p>
+      <p>Our goal is to take peer-reviewed research and present it in a way that's actually useful. Whether you want a quick answer or want to dive deep into the studies yourself, everything is here — explained at the depth you choose.</p>
+    </section>
+
+    <section class="about-section">
+      <h2>How We Work</h2>
+      <p>Every claim on this site is backed by a citation. Every citation links to a real, published study or authoritative source. We don't make things up, and we don't cherry-pick research to push an agenda.</p>
+      <p>Our content is organized into three levels of depth:</p>
+      <ul>
+        <li><strong>Simple</strong> — A clear, plain-language summary. What it is and why it matters.</li>
+        <li><strong>Medium</strong> — How the science works. Mechanisms, dosing, practical details.</li>
+        <li><strong>Deep</strong> — Full peer-reviewed evidence. Study designs, sample sizes, effect sizes, limitations.</li>
+      </ul>
+      <p>If the science is uncertain or conflicting, we say so. If a claim is based on animal studies or small trials, we say that too. We'd rather be honest than impressive.</p>
+    </section>
+
+    <section class="about-section">
+      <h2>Open to Being Wrong</h2>
+      <p>Science changes. What we know today might be refined or overturned tomorrow. That's not a weakness — it's the whole point.</p>
+      <p>We're committed to updating our content as new research emerges. When something changes, we want you to be able to see what changed and why. Transparency isn't just a value we talk about — it's built into how this site works.</p>
+      <p>If you think something on this site is wrong, outdated, or missing important context — we want to hear about it. Submit conflicting research, challenge our conclusions, point out what we missed. That makes this better for everyone.</p>
+    </section>
+
+    <section class="about-section">
+      <h2>What We're Not</h2>
+      <ul>
+        <li>We're <strong>not doctors</strong>. Nothing on this site is medical advice. Talk to your healthcare provider before making changes based on anything you read here.</li>
+        <li>We're <strong>not selling supplements</strong>. We have no financial relationship with any product or brand mentioned on this site.</li>
+        <li>We're <strong>not trying to scare you</strong>. The goal is information, not fear. Our <a href="/levels">5-level system</a> is designed to help you make gradual changes at your own pace.</li>
+      </ul>
+    </section>
+
+    <section class="about-section">
+      <h2>Open Source</h2>
+      <p>This entire site is open source. You can see exactly how it works, how content is structured, and how it gets published. No black boxes.</p>
+      <p><a href="https://github.com/intrepideai/whatshealthyandwhy" target="_blank" rel="noopener noreferrer">View the source code on GitHub &rarr;</a></p>
+    </section>
+
+    <section class="about-section">
+      <h2>The Big Picture</h2>
+      <p>We want to build something that people can genuinely trust. Not because we say "trust us," but because everything is verifiable, citable, and open to scrutiny.</p>
+      <p>Eventually, we plan to add version history for every page so you can see what changed and when. Community submissions of supporting or conflicting research. Confidence scores based on evidence quality. Full cost and traffic transparency.</p>
+      <p>But right now, we're starting with the foundation: good research, clearly presented, honestly cited.</p>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .about-page {
+    max-width: 38rem;
+  }
+
+  .about-section {
+    margin-bottom: var(--space-2xl);
+  }
+
+  .about-section h2 {
+    margin-top: var(--space-xl);
+  }
+
+  .about-section ul {
+    padding-left: var(--space-lg);
+  }
+
+  .about-section li {
+    margin-bottom: var(--space-sm);
+    line-height: 1.6;
+  }
+</style>

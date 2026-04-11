@@ -1,0 +1,52 @@
+---
+interface Reference {
+  id: string;
+  pmid?: string;
+  url?: string;
+  title: string;
+  authors: string;
+  year: number;
+  journal: string;
+}
+
+interface Props {
+  references: Reference[];
+}
+
+const { references } = Astro.props;
+---
+
+{references.length > 0 && (
+  <section class="references">
+    <h2>References</h2>
+    <ol class="reference-list">
+      {references.map((ref, i) => (
+        <li class="reference-item" id={`ref-${ref.id}`}>
+          <span class="reference-title">{ref.title}</span>
+          <span class="reference-meta">
+            {ref.authors}. <em>{ref.journal}</em>, {ref.year}.
+          </span>
+          {ref.pmid ? (
+            <a
+              href={`https://pubmed.ncbi.nlm.nih.gov/${ref.pmid}/`}
+              class="reference-link"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              PubMed {ref.pmid} &rarr;
+            </a>
+          ) : ref.url ? (
+            <a
+              href={ref.url}
+              class="reference-link"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Source &rarr;
+            </a>
+          ) : null}
+        </li>
+      ))}
+    </ol>
+  </section>
+)}

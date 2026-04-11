@@ -1,0 +1,10 @@
+---
+interface Props {
+  id: string;
+  index: number;
+}
+
+const { id, index } = Astro.props;
+---
+
+<a href={`#ref-${id}`} class="citation-mark" title={`See reference ${index}`}>[{index}]</a>

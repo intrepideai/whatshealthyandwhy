@@ -1,0 +1,80 @@
+---
+interface Props {
+  simple: string;
+  medium: string;
+  deep: string;
+  subtopicId: string;
+}
+
+const { simple, medium, deep, subtopicId } = Astro.props;
+---
+
+<div class="disclosure-section">
+  <div class="disclosure-content" set:html={simple} />
+
+  {medium && (
+    <>
+      <button
+        class="disclosure-toggle"
+        data-target={`medium-${subtopicId}`}
+        aria-expanded="false"
+        aria-controls={`medium-${subtopicId}`}
+      >
+        Tell me more <span class="arrow">▼</span>
+      </button>
+      <div class="disclosure-expandable" id={`medium-${subtopicId}`} role="region">
+        <div class="disclosure-content" set:html={medium} />
+
+        {deep && (
+          <>
+            <button
+              class="disclosure-toggle"
+              data-target={`deep-${subtopicId}`}
+              aria-expanded="false"
+              aria-controls={`deep-${subtopicId}`}
+            >
+              Show me the research <span class="arrow">▼</span>
+            </button>
+            <div class="disclosure-expandable" id={`deep-${subtopicId}`} role="region">
+              <div class="disclosure-content" set:html={deep} />
+            </div>
+          </>
+        )}
+      </div>
+    </>
+  )}
+</div>
+
+<noscript>
+  <style>
+    .disclosure-expandable { max-height: none !important; opacity: 1 !important; }
+    .disclosure-toggle { display: none !important; }
+  </style>
+</noscript>
+
+<script>
+  document.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest('.disclosure-toggle') as HTMLButtonElement | null;
+    if (!btn) return;
+
+    const targetId = btn.dataset.target;
+    if (!targetId) return;
+
+    const target = document.getElementById(targetId);
+    if (!target) return;
+
+    const isExpanded = btn.getAttribute('aria-expanded') === 'true';
+
+    if (isExpanded) {
+      target.style.maxHeight = '0';
+      target.classList.remove('expanded');
+      btn.classList.remove('expanded');
+      btn.setAttribute('aria-expanded', 'false');
+    } else {
+      target.style.maxHeight = target.scrollHeight + 1000 + 'px';
+      target.classList.add('expanded');
+      btn.classList.add('expanded');
+      btn.setAttribute('aria-expanded', 'true');
+    }
+  });
+</script>

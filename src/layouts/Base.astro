@@ -1,0 +1,59 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = "Peer-reviewed health research, made accessible." } = Astro.props;
+const siteTitle = "What's Healthy and Why";
+const fullTitle = title === siteTitle ? title : `${title} — ${siteTitle}`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <title>{fullTitle}</title>
+
+    <link rel="preload" href="/fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/lora-bold.woff2" as="font" type="font/woff2" crossorigin />
+
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={siteTitle} />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <a href="/" class="site-logo">What's Healthy & Why</a>
+        <nav class="site-nav">
+          <a href="/">Topics</a>
+          <a href="/levels">Levels</a>
+          <a href="/about">About</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="site-main">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <p>&copy; {new Date().getFullYear()} What's Healthy and Why. All content backed by peer-reviewed research.</p>
+      <p class="footer-links">
+        <a href="/about">About</a>
+        <span class="footer-sep">&middot;</span>
+        <a href="/levels">Levels</a>
+        <span class="footer-sep">&middot;</span>
+        <a href="https://github.com/intrepideai/whatshealthyandwhy" target="_blank" rel="noopener noreferrer">GitHub</a>
+      </p>
+    </footer>
+  </body>
+</html>
+
+<style is:global>
+  @import '../styles/global.css';
+</style>
