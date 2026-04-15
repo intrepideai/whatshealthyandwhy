@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import QualityRating from '../../components/QualityRating.astro';
 import { getCollection } from 'astro:content';
 import { marked } from 'marked';
 
@@ -49,6 +50,8 @@ const content = marked.parse(product.body || '') as string;
         </a>
 
         <p class="not-sponsored">We are not affiliated with this brand. This is an independent recommendation.</p>
+
+        <QualityRating quality={product.data.quality} />
       </div>
     </div>
 

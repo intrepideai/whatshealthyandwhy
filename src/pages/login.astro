@@ -1,0 +1,184 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Sign In">
+  <div class="login-page">
+    <h1>Sign in</h1>
+    <p class="login-intro">Enter your email and we'll send you a magic link to sign in. No password needed.</p>
+
+    <div id="login-form-container">
+      <form id="magic-link-form" class="login-form">
+        <label for="email">Email address</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          required
+          placeholder="you@example.com"
+          autocomplete="email"
+        />
+        <button type="submit" id="submit-btn">Send magic link</button>
+      </form>
+    </div>
+
+    <div id="login-success" class="login-message" hidden>
+      <h2>Check your email</h2>
+      <p>We sent a sign-in link to <strong id="sent-email"></strong>. Click the link in the email to sign in.</p>
+      <p class="login-note">The link expires in 15 minutes. Check your spam folder if you don't see it.</p>
+    </div>
+
+    <div id="login-error" class="login-message login-error" hidden>
+      <p id="error-text"></p>
+    </div>
+  </div>
+</Base>
+
+<script>
+  const form = document.getElementById('magic-link-form') as HTMLFormElement;
+  const formContainer = document.getElementById('login-form-container')!;
+  const successEl = document.getElementById('login-success')!;
+  const errorEl = document.getElementById('login-error')!;
+  const errorText = document.getElementById('error-text')!;
+  const sentEmail = document.getElementById('sent-email')!;
+  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+
+  // Show error from URL params (e.g., expired magic link)
+  const params = new URLSearchParams(window.location.search);
+  const urlError = params.get('error');
+  if (urlError === 'invalid-or-expired') {
+    errorText.textContent = 'That link is invalid or has expired. Please request a new one.';
+    errorEl.hidden = false;
+  } else if (urlError === 'missing-token') {
+    errorText.textContent = 'Invalid sign-in link. Please request a new one.';
+    errorEl.hidden = false;
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorEl.hidden = true;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending...';
+
+    const email = (form.elements.namedItem('email') as HTMLInputElement).value;
+
+    try {
+      const res = await fetch('/api/auth/send-magic-link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      if (res.status === 429) {
+        errorText.textContent = 'Too many attempts. Please try again later.';
+        errorEl.hidden = false;
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Send magic link';
+        return;
+      }
+
+      sentEmail.textContent = email;
+      formContainer.hidden = true;
+      successEl.hidden = false;
+    } catch {
+      errorText.textContent = 'Something went wrong. Please try again.';
+      errorEl.hidden = false;
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Send magic link';
+    }
+  });
+</script>
+
+<style>
+  .login-page {
+    max-width: 28rem;
+    margin: 0 auto;
+    padding: var(--space-2xl) var(--space-md);
+  }
+
+  .login-page h1 {
+    font-family: var(--font-heading);
+    font-size: 1.75rem;
+    margin-bottom: var(--space-sm);
+  }
+
+  .login-intro {
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-xl);
+    line-height: 1.6;
+  }
+
+  .login-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .login-form label {
+    font-weight: 600;
+    font-size: 0.875rem;
+  }
+
+  .login-form input {
+    padding: 0.625rem 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    background: var(--color-surface);
+    color: var(--color-text);
+  }
+
+  .login-form input:focus {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 1px;
+    border-color: var(--color-accent);
+  }
+
+  .login-form button {
+    padding: 0.625rem 1rem;
+    background: var(--color-accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: var(--space-xs);
+    transition: background 0.15s ease;
+  }
+
+  .login-form button:hover:not(:disabled) {
+    background: var(--color-accent-hover);
+  }
+
+  .login-form button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  .login-message {
+    padding: var(--space-lg);
+    background: var(--color-accent-light);
+    border-radius: var(--radius);
+    line-height: 1.6;
+  }
+
+  .login-message h2 {
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    margin-bottom: var(--space-sm);
+  }
+
+  .login-note {
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+    margin-top: var(--space-sm);
+  }
+
+  .login-error {
+    background: #fef2f2;
+    color: #991b1b;
+  }
+</style>

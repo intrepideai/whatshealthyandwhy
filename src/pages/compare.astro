@@ -1,0 +1,159 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const allTopics = await getCollection('topics');
+
+// Pre-built comparisons that people commonly search for
+const comparisons = [
+  {
+    title: 'Ashwagandha vs Rhodiola',
+    category: 'Adaptogens',
+    items: [
+      { name: 'Ashwagandha', traits: { timing: 'Evening', mechanism: 'GABA-mimetic, cortisol reduction', energy: 'Calming', onset: '2-4 weeks', bestFor: 'Anxiety, sleep, cortisol', evidence: 4 } },
+      { name: 'Rhodiola', traits: { timing: 'Morning', mechanism: 'COMT/MAO inhibition, dopamine', energy: 'Stimulating', onset: '1-2 weeks', bestFor: 'Fatigue, focus, physical performance', evidence: 3 } },
+    ],
+  },
+  {
+    title: 'Magnesium Glycinate vs Citrate vs Threonate',
+    category: 'Minerals',
+    items: [
+      { name: 'Glycinate', traits: { timing: 'Bedtime', mechanism: 'Mg + glycine (calming amino acid)', energy: 'Calming', onset: '1-2 weeks', bestFor: 'Sleep, anxiety, muscle relaxation', evidence: 4 } },
+      { name: 'Citrate', traits: { timing: 'Any', mechanism: 'Mg + citric acid (osmotic)', energy: 'Neutral', onset: '1-2 weeks', bestFor: 'General deficiency, constipation', evidence: 4 } },
+      { name: 'Threonate', traits: { timing: 'Any', mechanism: 'Crosses blood-brain barrier', energy: 'Neutral', onset: '4-8 weeks', bestFor: 'Cognition, memory, neurological', evidence: 2 } },
+    ],
+  },
+  {
+    title: 'Fish Oil vs Krill Oil',
+    category: 'Omega-3',
+    items: [
+      { name: 'Fish Oil', traits: { timing: 'With dinner', mechanism: 'EPA/DHA as triglycerides', energy: 'Neutral', onset: '4-8 weeks', bestFor: 'General inflammation, cardiovascular', evidence: 5 } },
+      { name: 'Krill Oil', traits: { timing: 'With dinner', mechanism: 'EPA/DHA as phospholipids + astaxanthin', energy: 'Neutral', onset: '4-8 weeks', bestFor: 'Joint inflammation, lower doses needed', evidence: 3 } },
+    ],
+  },
+  {
+    title: 'Turmeric vs Boswellia',
+    category: 'Anti-inflammatory',
+    items: [
+      { name: 'Turmeric', traits: { timing: 'Evening with fat', mechanism: 'NF-kB, COX-2, LOX inhibition', energy: 'Neutral', onset: '4-8 weeks', bestFor: 'Systemic inflammation, Nrf2 activation', evidence: 4 } },
+      { name: 'Boswellia', traits: { timing: 'With meals', mechanism: '5-LOX inhibition (specific)', energy: 'Neutral', onset: '2-4 weeks', bestFor: 'Joint pain, IBD, targeted inflammation', evidence: 3 } },
+    ],
+  },
+  {
+    title: 'Probiotics: Food vs Supplements',
+    category: 'Gut Health',
+    items: [
+      { name: 'Probiotic Foods', traits: { timing: 'With meals', mechanism: 'Diverse strains + prebiotics + postbiotics', energy: 'Neutral', onset: 'Ongoing', bestFor: 'General gut maintenance, diverse microbiome', evidence: 4 } },
+      { name: 'Probiotic Supplements', traits: { timing: 'Before breakfast', mechanism: 'Targeted high-dose specific strains', energy: 'Neutral', onset: '2-4 weeks', bestFor: 'Specific conditions (IBS, antibiotics recovery)', evidence: 4 } },
+    ],
+  },
+  {
+    title: 'CoQ10 vs PQQ',
+    category: 'Mitochondria',
+    items: [
+      { name: 'CoQ10', traits: { timing: 'Morning with fat', mechanism: 'Electron carrier in existing mitochondria', energy: 'Energizing', onset: '2-4 weeks', bestFor: 'Statin users, heart health, energy', evidence: 4 } },
+      { name: 'PQQ', traits: { timing: 'Morning with fat', mechanism: 'Creates new mitochondria (PGC-1alpha)', energy: 'Energizing', onset: '4-8 weeks', bestFor: 'Mitochondrial biogenesis, cognition', evidence: 2 } },
+    ],
+  },
+  {
+    title: 'Melatonin vs Glycine vs L-Theanine',
+    category: 'Sleep',
+    items: [
+      { name: 'Melatonin', traits: { timing: '30-60 min before bed', mechanism: 'MT1/MT2 receptor agonist (chronobiotic)', energy: 'Sedating', onset: 'Same night', bestFor: 'Sleep onset, jet lag, shift work', evidence: 4 } },
+      { name: 'Glycine', traits: { timing: '30-60 min before bed', mechanism: 'Lowers core body temp via SCN', energy: 'Calming', onset: 'Same night', bestFor: 'Sleep quality, no morning grogginess', evidence: 3 } },
+      { name: 'L-Theanine', traits: { timing: 'Bedtime or any time', mechanism: 'Alpha waves, GABA increase', energy: 'Alert relaxation', onset: '30-40 min', bestFor: 'Anxiety-driven insomnia, daytime calm', evidence: 3 } },
+    ],
+  },
+  {
+    title: 'NAC vs Glutathione',
+    category: 'Antioxidant',
+    items: [
+      { name: 'NAC', traits: { timing: 'Morning empty stomach', mechanism: 'Provides cysteine for glutathione synthesis', energy: 'Neutral', onset: '2-4 weeks', bestFor: 'Liver support, respiratory, cost-effective', evidence: 4 } },
+      { name: 'Liposomal Glutathione', traits: { timing: 'Empty stomach', mechanism: 'Direct glutathione supplementation', energy: 'Neutral', onset: '2-4 weeks', bestFor: 'Immediate GSH boost, oxidative stress', evidence: 3 } },
+    ],
+  },
+];
+
+const traits = ['timing', 'mechanism', 'energy', 'onset', 'bestFor', 'evidence'];
+const traitLabels: Record<string, string> = {
+  timing: 'Best timing', mechanism: 'Mechanism', energy: 'Energy effect',
+  onset: 'Onset', bestFor: 'Best for', evidence: 'Evidence',
+};
+---
+
+<Base title="Compare Supplements" description="Side-by-side comparisons of popular supplement alternatives.">
+  <div class="compare-page">
+    <a href="/" class="back-link">&larr; Home</a>
+    <h1>Compare</h1>
+    <p class="compare-intro">Side-by-side comparisons of the most common supplement alternatives. Each comparison highlights the key differences to help you choose.</p>
+
+    {comparisons.map((comp) => (
+      <section class="comparison">
+        <div class="comparison-header">
+          <span class="comparison-category">{comp.category}</span>
+          <h2>{comp.title}</h2>
+        </div>
+        <div class="comparison-table-wrap">
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th></th>
+                {comp.items.map(item => <th>{item.name}</th>)}
+              </tr>
+            </thead>
+            <tbody>
+              {traits.map(trait => (
+                <tr>
+                  <td class="trait-label">{traitLabels[trait]}</td>
+                  {comp.items.map(item => (
+                    <td>
+                      {trait === 'evidence'
+                        ? <span class="evidence-dots">{'●'.repeat(item.traits[trait])}{'○'.repeat(5 - item.traits[trait])}</span>
+                        : item.traits[trait]
+                      }
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    ))}
+  </div>
+</Base>
+
+<style>
+  .compare-page { max-width: 56rem; }
+  .compare-intro { color: var(--color-text-muted); margin-bottom: var(--space-2xl); line-height: 1.6; }
+
+  .comparison { margin-bottom: var(--space-2xl); }
+  .comparison-header { margin-bottom: var(--space-md); }
+  .comparison-category { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-light); }
+  .comparison-header h2 { font-size: 1.25rem; margin-top: 0.125rem; }
+
+  .comparison-table-wrap { overflow-x: auto; }
+
+  .comparison-table {
+    width: 100%; border-collapse: collapse; font-size: 0.875rem;
+  }
+  .comparison-table th {
+    padding: var(--space-sm) var(--space-md); text-align: left;
+    border-bottom: 2px solid var(--color-border); font-size: 0.9375rem;
+    color: var(--color-accent); white-space: nowrap;
+  }
+  .comparison-table td {
+    padding: var(--space-sm) var(--space-md); border-bottom: 1px solid var(--color-border-light);
+    vertical-align: top; line-height: 1.4; color: var(--color-text-muted);
+  }
+  .trait-label {
+    font-weight: 600; color: var(--color-text) !important; white-space: nowrap; width: 8rem;
+  }
+
+  .evidence-dots { color: var(--color-accent); letter-spacing: 2px; font-size: 0.75rem; }
+
+  @media (max-width: 640px) {
+    .comparison-table { font-size: 0.8125rem; }
+    .comparison-table th, .comparison-table td { padding: var(--space-xs) var(--space-sm); }
+  }
+</style>

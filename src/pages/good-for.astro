@@ -1,0 +1,121 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const allTopics = await getCollection('topics');
+
+const goals: Record<string, { label: string; keywords: string[]; topics: { slug: string; title: string; topic: string; confidence: number; description: string }[] }> = {
+  sleep: { label: 'Better Sleep', keywords: ['sleep', 'melatonin', 'valerian', 'passionflower', 'glycine', 'magnesium', 'circadian', 'l-theanine', '5-htp', 'insomnia'], topics: [] },
+  energy: { label: 'More Energy', keywords: ['energy', 'mitochondri', 'coq10', 'pqq', 'creatine', 'cordyceps', 'b-vitamin', 'iron', 'nad', 'shilajit', 'rhodiola', 'maca', 'fatigue'], topics: [] },
+  inflammation: { label: 'Reduce Inflammation', keywords: ['inflam', 'turmeric', 'curcumin', 'omega-3', 'boswellia', 'quercetin', 'anti-inflam', 'ginger', 'tart-cherry'], topics: [] },
+  gut: { label: 'Gut Health', keywords: ['gut', 'probiotic', 'ferment', 'leaky', 'microbiom', 'berberine', 'glutamine', 'butyrate', 'digestive', 'sibo', 'kimchi', 'kefir', 'kombucha', 'sauerkraut'], topics: [] },
+  immunity: { label: 'Immunity', keywords: ['immun', 'elderberry', 'echinacea', 'zinc', 'vitamin-c', 'vitamin-d', 'mushroom', 'astragalus', 'colostrum'], topics: [] },
+  focus: { label: 'Focus & Cognition', keywords: ['cognit', 'brain', 'focus', 'bacopa', 'lion', 'nootropic', 'ginkgo', 'phosphatidylserine', 'acetyl-l-carnitine', 'memory'], topics: [] },
+  hormones: { label: 'Hormone Balance', keywords: ['hormone', 'thyroid', 'testosterone', 'estrogen', 'dhea', 'dim', 'maca', 'seed-cycling', 'ashwagandha', 'pcos', 'endometri'], topics: [] },
+  detox: { label: 'Detox & Liver', keywords: ['detox', 'liver', 'glutathione', 'nac', 'milk-thistle', 'charcoal', 'heavy-metal', 'chlorella', 'spirulina', 'mold'], topics: [] },
+  heart: { label: 'Heart Health', keywords: ['heart', 'cardiovascular', 'blood pressure', 'cholesterol', 'omega-3', 'coq10', 'magnesium', 'nattokinase', 'taurine', 'beets'], topics: [] },
+  anxiety: { label: 'Stress & Anxiety', keywords: ['anxiety', 'stress', 'calm', 'ashwagandha', 'l-theanine', 'holy-basil', 'passionflower', 'gaba', 'rhodiola', 'adapto', 'vagus'], topics: [] },
+  skin: { label: 'Skin Health', keywords: ['skin', 'collagen', 'astaxanthin', 'aloe', 'vitamin-c', 'hyaluronic', 'acne', 'eczema'], topics: [] },
+  bones: { label: 'Bone & Joint', keywords: ['bone', 'joint', 'vitamin-d', 'vitamin-k2', 'calcium', 'boron', 'collagen', 'boswellia', 'glucosamine'], topics: [] },
+  longevity: { label: 'Longevity', keywords: ['longevity', 'telomer', 'nad', 'nmn', 'resveratrol', 'spermidine', 'fisetin', 'autophagy', 'senoly', 'epigenet', 'urolithin'], topics: [] },
+  weight: { label: 'Weight Management', keywords: ['weight', 'metabol', 'insulin', 'berberine', 'fasting', 'chromium', 'green-tea', 'bitter-melon', 'resistant-starch'], topics: [] },
+};
+
+for (const entry of allTopics) {
+  const text = `${entry.id} ${entry.data.title} ${entry.data.description} ${entry.data.topic}`.toLowerCase();
+  const topicSlug = entry.data.topic.toLowerCase().replace(/\s+/g, '-');
+  const parts = entry.id.split('/');
+  const subtopicSlug = parts[parts.length - 1];
+
+  for (const [goalKey, goal] of Object.entries(goals)) {
+    if (goal.keywords.some(k => text.includes(k))) {
+      goal.topics.push({
+        slug: `/${topicSlug}/${subtopicSlug}`,
+        title: entry.data.title,
+        topic: entry.data.topic,
+        confidence: entry.data.confidence || 0,
+        description: entry.data.description,
+      });
+    }
+  }
+}
+
+// Sort by confidence and deduplicate
+for (const goal of Object.values(goals)) {
+  const seen = new Set();
+  goal.topics = goal.topics
+    .filter(t => { if (seen.has(t.slug)) return false; seen.add(t.slug); return true; })
+    .sort((a, b) => b.confidence - a.confidence)
+    .slice(0, 12);
+}
+---
+
+<Base title="Good For..." description="Browse health topics by goal — find what's researched for sleep, energy, inflammation, and more.">
+  <div class="goodfor-page">
+    <a href="/" class="back-link">&larr; Home</a>
+    <h1>Good For...</h1>
+    <p class="goodfor-intro">Browse topics by health goal. Results are sorted by evidence strength — the most researched options appear first.</p>
+
+    <div class="goal-nav">
+      {Object.entries(goals).map(([key, goal]) => (
+        <a href={`#${key}`} class="goal-chip">{goal.label}</a>
+      ))}
+    </div>
+
+    {Object.entries(goals).map(([key, goal]) => (
+      goal.topics.length > 0 && (
+        <section class="goal-section" id={key}>
+          <h2>{goal.label}</h2>
+          <div class="topic-grid">
+            {goal.topics.map((t) => (
+              <a href={t.slug} class="topic-card">
+                <span class="topic-card-category">{t.topic}</span>
+                <span class="topic-card-title">{t.title}</span>
+                <span class="topic-card-desc">{t.description}</span>
+                {t.confidence > 0 && (
+                  <span class="topic-card-confidence">
+                    {'●'.repeat(t.confidence)}{'○'.repeat(5 - t.confidence)}
+                  </span>
+                )}
+              </a>
+            ))}
+          </div>
+        </section>
+      )
+    ))}
+  </div>
+</Base>
+
+<style>
+  .goodfor-page { max-width: 52rem; }
+  .goodfor-intro { color: var(--color-text-muted); margin-bottom: var(--space-xl); line-height: 1.6; }
+
+  .goal-nav {
+    display: flex; flex-wrap: wrap; gap: var(--space-xs); margin-bottom: var(--space-2xl);
+  }
+  .goal-chip {
+    padding: 0.375rem 0.75rem; border: 1px solid var(--color-border); border-radius: 1rem;
+    font-size: 0.8125rem; font-weight: 600; color: var(--color-text-muted); text-decoration: none;
+    transition: all 0.15s ease;
+  }
+  .goal-chip:hover { border-color: var(--color-accent); color: var(--color-accent); background: var(--color-accent-light); }
+
+  .goal-section { margin-bottom: var(--space-2xl); }
+  .goal-section h2 { margin-bottom: var(--space-md); font-size: 1.25rem; }
+
+  .topic-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr)); gap: var(--space-sm); }
+
+  .topic-card {
+    display: flex; flex-direction: column; padding: var(--space-md);
+    border: 1px solid var(--color-border-light); border-radius: var(--radius);
+    text-decoration: none; transition: border-color 0.15s ease;
+  }
+  .topic-card:hover { border-color: var(--color-accent); }
+
+  .topic-card-category { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--color-text-light); }
+  .topic-card-title { font-size: 0.9375rem; font-weight: 600; color: var(--color-text); margin: 0.125rem 0; }
+  .topic-card-desc { font-size: 0.8125rem; color: var(--color-text-muted); line-height: 1.4; flex: 1; }
+  .topic-card-confidence { font-size: 0.625rem; color: var(--color-accent); margin-top: var(--space-xs); letter-spacing: 2px; }
+
+  @media (max-width: 640px) { .topic-grid { grid-template-columns: 1fr; } }
+</style>

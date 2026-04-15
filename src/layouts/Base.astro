@@ -1,4 +1,8 @@
 ---
+import UserNav from '../components/UserNav.astro';
+import ThemeToggle from '../components/ThemeToggle.astro';
+import EmailSubscribe from '../components/EmailSubscribe.astro';
+
 interface Props {
   title: string;
   description?: string;
@@ -18,6 +22,8 @@ const fullTitle = title === siteTitle ? title : `${title} — ${siteTitle}`;
     <title>{fullTitle}</title>
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#2a7d4f" />
     <link rel="preload" href="/fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin />
 
     <meta property="og:title" content={fullTitle} />
@@ -25,7 +31,7 @@ const fullTitle = title === siteTitle ? title : `${title} — ${siteTitle}`;
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={siteTitle} />
 
-    <!-- Circadian theme: sets CSS vars based on local time, runs before paint to avoid flash -->
+    <!-- Circadian theme + dark mode override: runs before paint to avoid flash -->
     <script is:inline>
       (function() {
         var h = new Date().getHours();
@@ -36,6 +42,8 @@ const fullTitle = title === siteTitle ? title : `${title} — ${siteTitle}`;
         else if (h >= 17 && h < 19) t = 'dusk';
         else t = 'evening';
         document.documentElement.setAttribute('data-time', t);
+        var override = localStorage.getItem('theme-override');
+        if (override) document.documentElement.setAttribute('data-theme', override);
       })();
     </script>
   </head>
@@ -45,16 +53,21 @@ const fullTitle = title === siteTitle ? title : `${title} — ${siteTitle}`;
         <a href="/" class="site-logo">What's Healthy & Why</a>
         <nav class="site-nav">
           <a href="/">Topics</a>
+          <a href="/schedule">Schedule</a>
           <a href="/levels">Levels</a>
           <a href="/products">Products</a>
           <a href="/about">About</a>
         </nav>
+        <UserNav />
+        <ThemeToggle />
       </div>
     </header>
 
     <main class="site-main">
       <slot />
     </main>
+
+    <EmailSubscribe />
 
     <footer class="site-footer">
       <p>&copy; {new Date().getFullYear()} What's Healthy and Why. All content backed by peer-reviewed research.</p>
@@ -68,6 +81,11 @@ const fullTitle = title === siteTitle ? title : `${title} — ${siteTitle}`;
         <a href="https://github.com/intrepideai/whatshealthyandwhy" target="_blank" rel="noopener noreferrer">GitHub</a>
       </p>
     </footer>
+    <script is:inline>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js').catch(function() {});
+      }
+    </script>
   </body>
 </html>
 

@@ -1,0 +1,398 @@
+---
+interface Props {
+  topicId: string;
+}
+
+const { topicId } = Astro.props;
+---
+
+<section class="challenge-section" id="challenge-section" data-topic-id={topicId}>
+  <div class="challenge-header" id="challenge-header" hidden>
+    <button class="challenge-toggle" id="challenge-toggle" aria-expanded="false">
+      <span class="challenge-badge" id="challenge-badge">0</span>
+      <span>active challenges</span>
+      <span class="toggle-icon" aria-hidden="true">&#x25BC;</span>
+    </button>
+  </div>
+
+  <div class="challenge-list" id="challenge-list" hidden></div>
+
+  <div class="challenge-submit" id="challenge-submit-area" hidden>
+    <button class="challenge-submit-toggle" id="challenge-submit-toggle">Submit a challenge</button>
+
+    <form class="challenge-form" id="challenge-form" hidden>
+      <p class="form-intro">Challenge a specific claim on this page with counter-evidence. You must provide reasoning and ideally a PubMed source.</p>
+
+      <label for="challenge-claim">What claim are you challenging?</label>
+      <textarea
+        id="challenge-claim"
+        name="claim"
+        required
+        minlength="10"
+        maxlength="2000"
+        rows="2"
+        placeholder="e.g., The claim that X reduces inflammation by Y%"
+      ></textarea>
+
+      <label for="challenge-evidence">Your counter-evidence</label>
+      <textarea
+        id="challenge-evidence"
+        name="counterEvidence"
+        required
+        minlength="20"
+        maxlength="5000"
+        rows="4"
+        placeholder="Explain your counter-evidence, cite studies, and describe why you think the current content should be reconsidered."
+      ></textarea>
+
+      <label for="challenge-pubmed">PubMed URL (optional)</label>
+      <input
+        type="url"
+        id="challenge-pubmed"
+        name="pubmedUrl"
+        placeholder="https://pubmed.ncbi.nlm.nih.gov/12345678/"
+      />
+
+      <div class="form-actions">
+        <button type="submit" id="challenge-submit-btn">Submit challenge</button>
+        <button type="button" id="challenge-cancel-btn" class="cancel-btn">Cancel</button>
+      </div>
+
+      <p class="form-error" id="challenge-error" hidden></p>
+      <p class="form-success" id="challenge-success" hidden>Challenge submitted. It will be reviewed by our team.</p>
+    </form>
+  </div>
+</section>
+
+<script>
+  const section = document.getElementById('challenge-section')!;
+  const topicId = section.dataset.topicId!;
+  const header = document.getElementById('challenge-header')!;
+  const toggle = document.getElementById('challenge-toggle')!;
+  const badge = document.getElementById('challenge-badge')!;
+  const list = document.getElementById('challenge-list')!;
+  const submitArea = document.getElementById('challenge-submit-area')!;
+  const submitToggle = document.getElementById('challenge-submit-toggle')!;
+  const form = document.getElementById('challenge-form') as HTMLFormElement;
+  const cancelBtn = document.getElementById('challenge-cancel-btn')!;
+  const submitBtn = document.getElementById('challenge-submit-btn') as HTMLButtonElement;
+  const errorEl = document.getElementById('challenge-error')!;
+  const successEl = document.getElementById('challenge-success')!;
+
+  let isAuthenticated = false;
+
+  // Load challenges for this topic
+  async function loadChallenges() {
+    try {
+      const res = await fetch(`/api/challenges?topic_id=${encodeURIComponent(topicId)}`);
+      if (!res.ok) return;
+
+      const data = await res.json();
+      if (data.count > 0) {
+        badge.textContent = data.count;
+        header.hidden = false;
+
+        list.innerHTML = data.challenges
+          .map((c: { id: string; claim: string; counterEvidence: string; pubmedUrl: string | null; createdAt: string }) => `
+            <div class="challenge-card">
+              <p class="challenge-card-claim">${c.claim}</p>
+              <p class="challenge-card-evidence">${c.counterEvidence}</p>
+              ${c.pubmedUrl ? `<a href="${c.pubmedUrl}" target="_blank" rel="noopener noreferrer" class="challenge-card-source">PubMed source</a>` : ''}
+              <time class="challenge-card-date">${new Date(c.createdAt).toLocaleDateString()}</time>
+            </div>
+          `)
+          .join('');
+      }
+    } catch {
+      // Silently fail — challenges are supplementary
+    }
+  }
+
+  // Check auth status
+  async function checkAuth() {
+    try {
+      const res = await fetch('/api/auth/me');
+      if (res.ok) {
+        const data = await res.json();
+        if (data.user) {
+          isAuthenticated = true;
+          submitArea.hidden = false;
+        }
+      }
+    } catch {
+      // Not authenticated
+    }
+  }
+
+  // Toggle challenge list visibility
+  toggle.addEventListener('click', () => {
+    const expanded = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!expanded));
+    list.hidden = expanded;
+  });
+
+  // Toggle challenge form
+  submitToggle.addEventListener('click', () => {
+    form.hidden = !form.hidden;
+    submitToggle.hidden = !form.hidden;
+  });
+
+  cancelBtn.addEventListener('click', () => {
+    form.hidden = true;
+    submitToggle.hidden = false;
+    errorEl.hidden = true;
+    successEl.hidden = true;
+  });
+
+  // Submit challenge
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorEl.hidden = true;
+    successEl.hidden = true;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting...';
+
+    const claim = (form.elements.namedItem('claim') as HTMLTextAreaElement).value;
+    const counterEvidence = (form.elements.namedItem('counterEvidence') as HTMLTextAreaElement).value;
+    const pubmedUrl = (form.elements.namedItem('pubmedUrl') as HTMLInputElement).value;
+
+    try {
+      const res = await fetch('/api/challenges', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ topicId, claim, counterEvidence, pubmedUrl }),
+      });
+
+      if (res.status === 401) {
+        errorEl.textContent = 'You must be signed in to submit a challenge.';
+        errorEl.hidden = false;
+      } else if (res.status === 429) {
+        errorEl.textContent = 'Too many challenges submitted. Try again tomorrow.';
+        errorEl.hidden = false;
+      } else if (!res.ok) {
+        const data = await res.json();
+        errorEl.textContent = data.error || 'Something went wrong.';
+        errorEl.hidden = false;
+      } else {
+        successEl.hidden = false;
+        form.reset();
+        // Reload challenges to show the new one
+        await loadChallenges();
+      }
+    } catch {
+      errorEl.textContent = 'Network error. Please try again.';
+      errorEl.hidden = false;
+    }
+
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Submit challenge';
+  });
+
+  loadChallenges();
+  checkAuth();
+</script>
+
+<style>
+  .challenge-section {
+    margin-top: var(--space-xl);
+  }
+
+  .challenge-toggle {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    background: none;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: 0.5rem 0.75rem;
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease;
+  }
+
+  .challenge-toggle:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  .challenge-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.25rem;
+    height: 1.25rem;
+    padding: 0 0.375rem;
+    background: #fef3c7;
+    color: #92400e;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .toggle-icon {
+    font-size: 0.625rem;
+    transition: transform 0.15s ease;
+  }
+
+  .challenge-toggle[aria-expanded="true"] .toggle-icon {
+    transform: rotate(180deg);
+  }
+
+  .challenge-list {
+    margin-top: var(--space-sm);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .challenge-card {
+    padding: var(--space-md);
+    border: 1px solid var(--color-border);
+    border-left: 3px solid #f59e0b;
+    border-radius: var(--radius);
+    background: var(--color-surface);
+  }
+
+  .challenge-card-claim {
+    font-weight: 600;
+    font-size: 0.9375rem;
+    margin-bottom: var(--space-xs);
+  }
+
+  .challenge-card-evidence {
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-xs);
+  }
+
+  .challenge-card-source {
+    font-size: 0.8125rem;
+    color: var(--color-accent);
+    margin-right: var(--space-sm);
+  }
+
+  .challenge-card-date {
+    font-size: 0.75rem;
+    color: var(--color-text-light);
+  }
+
+  .challenge-submit {
+    margin-top: var(--space-md);
+  }
+
+  .challenge-submit-toggle {
+    padding: 0.5rem 1rem;
+    background: none;
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius);
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease;
+  }
+
+  .challenge-submit-toggle:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  .challenge-form {
+    margin-top: var(--space-sm);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .form-intro {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    line-height: 1.5;
+  }
+
+  .challenge-form label {
+    font-weight: 600;
+    font-size: 0.875rem;
+  }
+
+  .challenge-form textarea,
+  .challenge-form input {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    background: var(--color-surface);
+    color: var(--color-text);
+    resize: vertical;
+  }
+
+  .challenge-form textarea:focus,
+  .challenge-form input:focus {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 1px;
+    border-color: var(--color-accent);
+  }
+
+  .form-actions {
+    display: flex;
+    gap: var(--space-sm);
+    margin-top: var(--space-xs);
+  }
+
+  .form-actions button[type="submit"] {
+    padding: 0.5rem 1rem;
+    background: var(--color-accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .form-actions button[type="submit"]:hover:not(:disabled) {
+    background: var(--color-accent-hover);
+  }
+
+  .form-actions button[type="submit"]:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  .cancel-btn {
+    padding: 0.5rem 1rem;
+    background: none;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    cursor: pointer;
+  }
+
+  .cancel-btn:hover {
+    border-color: var(--color-text-muted);
+  }
+
+  .form-error {
+    color: #991b1b;
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+    background: #fef2f2;
+    border-radius: var(--radius);
+  }
+
+  .form-success {
+    color: var(--color-accent);
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--color-accent-light);
+    border-radius: var(--radius);
+  }
+</style>

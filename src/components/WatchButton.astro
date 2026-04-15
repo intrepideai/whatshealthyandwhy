@@ -1,0 +1,80 @@
+---
+interface Props {
+  topicId: string;
+}
+const { topicId } = Astro.props;
+---
+
+<span class="watch-btn-container" id="watch-container" data-topic-id={topicId} hidden>
+  <button class="watch-btn" id="watch-btn">
+    <span id="watch-label">Watch this topic</span>
+  </button>
+</span>
+
+<script>
+  const container = document.getElementById('watch-container')!;
+  const btn = document.getElementById('watch-btn')!;
+  const label = document.getElementById('watch-label')!;
+  const topicId = container.dataset.topicId!;
+  let watching = false;
+
+  async function checkWatch() {
+    try {
+      const res = await fetch(`/api/watch?topic_id=${encodeURIComponent(topicId)}`);
+      const data = await res.json();
+      watching = data.watching;
+      updateUI();
+      // Only show if user is authenticated (the API returns watching: false for unauth but we check /api/auth/me)
+      const authRes = await fetch('/api/auth/me');
+      if (authRes.ok) {
+        const authData = await authRes.json();
+        if (authData.user) container.hidden = false;
+      }
+    } catch {}
+  }
+
+  function updateUI() {
+    label.textContent = watching ? 'Watching' : 'Watch this topic';
+    btn.classList.toggle('is-watching', watching);
+  }
+
+  btn.addEventListener('click', async () => {
+    try {
+      const res = await fetch('/api/watch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ topicId, action: watching ? 'unwatch' : 'watch' }),
+      });
+      const data = await res.json();
+      watching = data.watching;
+      updateUI();
+    } catch {}
+  });
+
+  checkWatch();
+</script>
+
+<style>
+  .watch-btn {
+    padding: 0.375rem 0.75rem;
+    background: none;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .watch-btn:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  .watch-btn.is-watching {
+    background: var(--color-accent-light);
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+</style>

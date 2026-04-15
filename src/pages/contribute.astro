@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import TopicRequestForm from '../components/TopicRequestForm.astro';
 ---
 
 <Base title="Contribute" description="Challenge our research, submit evidence, or suggest new topics.">
@@ -12,17 +13,13 @@ import Base from '../layouts/Base.astro';
       <h2>Challenge Our Research</h2>
       <p>Think something on this site is wrong, outdated, or missing important context? Good. That's exactly what we want to hear.</p>
       <p>Every challenge is reviewed. If your evidence is solid, we'll update the page — and the change will be visible in the page's edit history for everyone to see.</p>
-      <a href="https://github.com/intrepideai/whatshealthyandwhy/issues/new?template=challenge.yml" target="_blank" rel="noopener noreferrer" class="contribute-button">
-        Submit conflicting or supporting research
-      </a>
+      <p>To submit a challenge, visit any topic page and click "Submit a challenge" at the bottom. You'll need to <a href="/login">sign in</a> first.</p>
     </section>
 
     <section class="contribute-section">
       <h2>Suggest a Topic</h2>
       <p>Is there a health topic we haven't covered yet? Let us know and we'll research it.</p>
-      <a href="https://github.com/intrepideai/whatshealthyandwhy/issues/new?title=[Topic Suggestion]&labels=topic-suggestion" target="_blank" rel="noopener noreferrer" class="contribute-button">
-        Suggest a new topic
-      </a>
+      <TopicRequestForm />
     </section>
 
     <section class="contribute-section">

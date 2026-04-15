@@ -1,0 +1,841 @@
+---
+import Base from '../layouts/Base.astro';
+
+const timeBlocks = [
+  {
+    id: 'morning-empty',
+    time: '7:00 AM',
+    label: 'Morning — Empty Stomach',
+    icon: '☀️',
+    note: '30 minutes before breakfast. Best for amino acids, certain herbs, and compounds that compete with food for absorption.',
+    supplements: [
+      {
+        name: 'Probiotics',
+        why: 'Gastric acid is lowest upon waking. Taking before food gives bacteria transit through a less acidic stomach.',
+        with: 'Small amount of water',
+        avoid: 'Hot beverages (kills bacteria), antibiotics',
+        frequency: 'Daily',
+        pmid: '21901293',
+        topics: ['probiotics'],
+      },
+      {
+        name: 'NAC',
+        why: 'Only 6-10% bioavailability — food (especially protein) further reduces absorption due to competition with dietary cysteine.',
+        with: 'Vitamin C (synergistic for glutathione recycling)',
+        avoid: 'Protein meals, activated charcoal',
+        frequency: 'Daily',
+        pmid: '1967767',
+        topics: ['nac'],
+      },
+      {
+        name: 'L-Glutamine',
+        why: 'Competes with other amino acids for absorption. Fasted state allows direct uptake by intestinal lining.',
+        with: 'Water only',
+        avoid: 'Large protein meals',
+        frequency: 'Daily (5-10g)',
+        pmid: '11533317',
+        topics: ['l-glutamine'],
+      },
+      {
+        name: 'Sulforaphane',
+        why: 'Activates Nrf2 antioxidant pathway. Nrf2 target gene expression has circadian gating — peaks during the morning active phase.',
+        with: 'Mustard seed powder (myrosinase source)',
+        avoid: 'No major conflicts',
+        frequency: 'Daily',
+        pmid: '24012542',
+        topics: ['sulforaphane'],
+      },
+      {
+        name: 'Alpha-Lipoic Acid',
+        why: 'Food reduces bioavailability by ~30%. Both water and fat soluble, so no fat needed. Mildly energizing.',
+        with: 'Acetyl-L-Carnitine (the "Ames combo" for mitochondria), Biotin',
+        avoid: 'Food, thyroid medication (4hr gap)',
+        frequency: 'Daily',
+        pmid: '12388164',
+        topics: ['alpha-lipoic-acid'],
+      },
+      {
+        name: 'Berberine',
+        why: 'Activates AMPK and blunts postprandial glucose spikes. Best 15-30 min before a carb-containing meal.',
+        with: 'Milk thistle or piperine (may improve bioavailability)',
+        avoid: 'Statins, blood thinners, CYP3A4 medications',
+        frequency: 'Daily before meals; some cycle 8 weeks on/2 off',
+        pmid: '18442638',
+        topics: ['berberine'],
+      },
+    ],
+  },
+  {
+    id: 'morning-food',
+    time: '7:30 AM',
+    label: 'Morning — With Breakfast',
+    icon: '🍳',
+    note: 'Take with a fat-containing meal. Fat-soluble vitamins need micelles for absorption. This is also the time for stimulating adaptogens.',
+    supplements: [
+      {
+        name: 'Vitamin D',
+        why: '32% higher absorption with a fat-containing meal. May suppress melatonin — avoid evening dosing.',
+        with: 'Vitamin K2, Magnesium (cofactor for D metabolism), fat source',
+        avoid: 'Mega-dose calcium, evening dosing',
+        frequency: 'Daily',
+        pmid: '20200983',
+        topics: ['vitamin-d'],
+      },
+      {
+        name: 'Vitamin K2',
+        why: 'Fat-soluble. Directs calcium to bones and away from arteries. MK-7 has a 72hr half-life; MK-4 is much shorter.',
+        with: 'Vitamin D, fat source, Vitamin A',
+        avoid: 'Warfarin/blood thinners',
+        frequency: 'Daily',
+        pmid: '28698808',
+        topics: ['vitamin-k2'],
+      },
+      {
+        name: 'CoQ10',
+        why: 'Absorption increases 3x with fat. Energizing — supports mitochondrial ATP production.',
+        with: 'Fat source, PQQ (synergistic for mitochondria), Shilajit',
+        avoid: 'Bedtime (may disrupt sleep)',
+        frequency: 'Daily',
+        pmid: '17482773',
+        topics: ['coq10'],
+      },
+      {
+        name: 'PQQ',
+        why: 'Promotes mitochondrial biogenesis via PGC-1alpha. Energizing — morning aligns with daytime energy needs.',
+        with: 'CoQ10 (PQQ makes new mitochondria, CoQ10 fuels them), fat source',
+        avoid: 'Bedtime',
+        frequency: 'Daily',
+        pmid: '23092675',
+        topics: ['pqq'],
+      },
+      {
+        name: 'B-Vitamins',
+        why: 'Energizing — participate in energy metabolism. B6 and B12 may disrupt sleep if taken in evening.',
+        with: 'Food (reduces nausea from B3)',
+        avoid: 'Bedtime',
+        frequency: 'Daily',
+        pmid: '27989568',
+        topics: ['b-vitamins'],
+      },
+      {
+        name: 'Astaxanthin',
+        why: 'Highly lipophilic — 2.4-3x better absorption with a fat-containing meal. Accumulates over weeks.',
+        with: 'Omega-3 fish oil, other fat-soluble vitamins',
+        avoid: 'Fat-blocking agents',
+        frequency: 'Daily',
+        pmid: '22428137',
+        topics: ['astaxanthin'],
+      },
+      {
+        name: 'Rhodiola',
+        why: 'Stimulating — increases dopamine and norepinephrine by inhibiting COMT and MAO. Improves fatigue and stress.',
+        with: 'Other morning adaptogens (ginseng, cordyceps)',
+        avoid: 'Evening (insomnia), SSRIs',
+        frequency: 'Daily; some cycle 5 on/2 off',
+        pmid: '22228617',
+        topics: ['rhodiola'],
+      },
+      {
+        name: 'Cordyceps',
+        why: 'Enhances oxygen utilization and ATP production. Performance-enhancing and energizing.',
+        with: 'CoQ10, PQQ (mitochondrial support)',
+        avoid: 'Bedtime, immunosuppressants',
+        frequency: 'Daily',
+        pmid: '20804368',
+        topics: ['mushrooms'],
+      },
+      {
+        name: 'Creatine',
+        why: 'Timing isn\'t critical — accumulates over weeks. Carbs and protein improve uptake via insulin.',
+        with: 'Carbohydrates/protein (60% better loading)',
+        avoid: 'No major conflicts',
+        frequency: 'Daily (3-5g)',
+        pmid: '7572228',
+        topics: ['creatine'],
+      },
+      {
+        name: 'NMN / NAD+',
+        why: 'NAD+ biosynthesis enzyme NAMPT is clock-controlled, peaking during the active phase. Morning maximizes conversion.',
+        with: 'Resveratrol (SIRT1 activator needs NAD+ substrate), TMG',
+        avoid: 'Bedtime (mildly energizing)',
+        frequency: 'Daily',
+        pmid: '19229278',
+        topics: ['nad-plus'],
+      },
+      {
+        name: 'Iodine',
+        why: 'Supports thyroid hormone synthesis. TSH peaks at night, T3/T4 peak in morning — provides substrate when production ramps up.',
+        with: 'Selenium (cofactor for T4→T3 conversion)',
+        avoid: 'High doses with Hashimoto\'s (without supervision)',
+        frequency: 'Daily',
+        pmid: '20172476',
+        topics: ['iodine'],
+      },
+      {
+        name: 'Selenium',
+        why: 'Essential for glutathione peroxidase and thyroid deiodinases. Pairs with iodine for thyroid support.',
+        with: 'Iodine, Vitamin E',
+        avoid: 'High-dose Vitamin C (with inorganic selenium only)',
+        frequency: 'Daily (max 400mcg)',
+        pmid: '11115795',
+        topics: ['selenium'],
+      },
+      {
+        name: 'Boron',
+        why: 'Supports calcium/magnesium/vitamin D metabolism. May reduce SHBG, increasing free testosterone — morning aligns with peak T production.',
+        with: 'Calcium, magnesium, vitamin D',
+        avoid: 'No major conflicts at 3-6mg',
+        frequency: 'Daily',
+        pmid: '21129941',
+        topics: ['boron'],
+      },
+      {
+        name: 'Shilajit',
+        why: 'Contains fulvic acid that enhances CoQ10 levels. Mildly energizing. Fulvic acid may improve absorption of other supplements.',
+        with: 'CoQ10 (synergistic)',
+        avoid: 'Evening (stimulating for some)',
+        frequency: 'Daily',
+        pmid: '22482077',
+        topics: ['shilajit'],
+      },
+      {
+        name: 'Bacopa',
+        why: 'Fat-soluble bacosides need dietary fat. Cognitive benefits take 8-12 weeks. Morning aligns with cognitive demand.',
+        with: 'Fat source, Lion\'s Mane (complementary nootropics)',
+        avoid: 'Anticholinergic meds, thyroid meds',
+        frequency: 'Daily for 8-12+ weeks',
+        pmid: '24252493',
+        topics: ['bacopa-monnieri'],
+      },
+      {
+        name: 'Vitamin C',
+        why: 'Absorption saturates above 200mg per dose. Split dosing (morning + midday) maintains higher plasma levels than one large dose.',
+        with: 'Iron (if supplementing — 2-3x absorption boost), Collagen',
+        avoid: 'High-dose cyanocobalamin B12 (use methylcobalamin instead)',
+        frequency: 'Daily, split doses',
+        pmid: '8623000',
+        topics: ['vitamin-c'],
+      },
+    ],
+  },
+  {
+    id: 'midday',
+    time: '12:30 PM',
+    label: 'Midday — With Lunch',
+    icon: '🌤️',
+    note: 'Best for minerals that compete with your morning stack. Separating minerals by 4+ hours prevents absorption competition.',
+    supplements: [
+      {
+        name: 'Iron',
+        why: 'Must separate from calcium, zinc, and magnesium by 2-4 hours. Alternate-day dosing may be better — hepcidin rises after ingestion and suppresses absorption for ~24 hours.',
+        with: 'Vitamin C (50-100mg), light food if GI-sensitive',
+        avoid: 'Calcium, zinc, magnesium, coffee, tea, turmeric, dairy, antacids',
+        frequency: 'Every other day may be superior to daily',
+        pmid: '28389369',
+        topics: ['iron'],
+      },
+      {
+        name: 'Zinc',
+        why: 'Separate from iron and calcium. Zinc picolinate and bisglycinate have superior absorption. Nausea common on empty stomach.',
+        with: 'Protein-containing meal, Vitamin B6',
+        avoid: 'Iron, calcium, phytates, high-dose copper',
+        frequency: 'Daily; >30mg/day needs copper co-supplementation',
+        pmid: '3630857',
+        topics: ['zinc'],
+      },
+      {
+        name: 'Chromium',
+        why: 'Enhances insulin signaling — potentiates insulin receptor activity. Best with a carb-containing meal.',
+        with: 'Carbohydrate-containing meal, Vitamin C',
+        avoid: 'Antacids, iron (at very high doses)',
+        frequency: 'Daily with meals',
+        pmid: '10422769',
+        topics: ['chromium'],
+      },
+      {
+        name: 'Quercetin',
+        why: 'Bioavailability improves with fat and is enhanced by vitamin C. Anti-inflammatory and antihistamine. Timing is flexible.',
+        with: 'Fat source, Vitamin C, Bromelain (improves absorption)',
+        avoid: 'Cyclosporine, certain antibiotics (fluoroquinolones)',
+        frequency: 'Daily',
+        pmid: '15670984',
+        topics: ['quercetin'],
+      },
+      {
+        name: 'Resveratrol',
+        why: 'Low bioavailability (~1%). Piperine can improve absorption. Activates SIRT1 (which needs NAD+ substrate).',
+        with: 'NMN/NAD+ precursors, Piperine, Quercetin, fat source',
+        avoid: 'High-dose aspirin, CYP3A4 medications',
+        frequency: 'Daily',
+        pmid: '20026311',
+        topics: ['resveratrol'],
+      },
+      {
+        name: 'Vitamin C (2nd dose)',
+        why: 'Split dosing maintains higher plasma levels due to saturable intestinal absorption (SVCT1 transporters).',
+        with: 'Iron (if supplementing at this time)',
+        avoid: 'See morning notes',
+        frequency: 'Daily',
+        pmid: '8623000',
+        topics: ['vitamin-c'],
+      },
+    ],
+  },
+  {
+    id: 'evening',
+    time: '6:30 PM',
+    label: 'Evening — With Dinner',
+    icon: '🌅',
+    note: 'Take with a fat-containing meal. Best for calming adaptogens, anti-inflammatories, and compounds that support overnight repair.',
+    supplements: [
+      {
+        name: 'Omega-3 (Fish Oil)',
+        why: 'Fat-soluble — significantly higher absorption with a high-fat meal. Evening aligns with anti-inflammatory overnight repair. May improve sleep quality.',
+        with: 'Fat source, Vitamin E (prevents oxidation), Curcumin, Astaxanthin',
+        avoid: 'Blood thinners at very high doses (>3g/day)',
+        frequency: 'Daily',
+        pmid: '31067776',
+        topics: ['omega-3'],
+      },
+      {
+        name: 'Turmeric / Curcumin',
+        why: 'Lipophilic — needs fat. Piperine increases bioavailability by 2000%. Anti-inflammatory effects work during overnight repair phase.',
+        with: 'Fat source, Piperine/black pepper, Boswellia, Omega-3',
+        avoid: 'Iron supplements (chelates iron), blood thinners',
+        frequency: 'Daily',
+        pmid: '9619120',
+        topics: ['turmeric'],
+      },
+      {
+        name: 'Ashwagandha',
+        why: 'Reduces cortisol by ~30%. GABA-mimetic and calming. Evening aligns with the need to lower cortisol for healthy sleep onset.',
+        with: 'Fat-containing food, Magnesium',
+        avoid: 'Thyroid medications (may increase thyroid hormones), immunosuppressants',
+        frequency: 'Daily; some cycle 6-8 weeks on/2 off',
+        pmid: '23439798',
+        topics: ['ashwagandha'],
+      },
+      {
+        name: 'Magnesium',
+        why: 'Calming — blocks NMDA receptors, enhances GABA. Supports sleep onset and muscle recovery. Glycinate form best for sleep.',
+        with: 'Vitamin D, Vitamin B6 (enhances intracellular transport)',
+        avoid: 'Iron, antibiotics (separate by 2hr)',
+        frequency: 'Daily (most adults are deficient)',
+        pmid: '23853635',
+        topics: ['magnesium'],
+      },
+      {
+        name: 'Taurine',
+        why: 'Inhibitory — modulates GABA-A and glycine receptors. Calming. Cardioprotective during overnight cardiovascular function.',
+        with: 'Magnesium, Glycine',
+        avoid: 'Morning if optimizing alertness',
+        frequency: 'Daily (1-3g)',
+        pmid: '22855308',
+        topics: ['taurine'],
+      },
+      {
+        name: 'Collagen',
+        why: 'Collagen synthesis peaks during sleep when growth hormone is highest. Evening provides amino acid building blocks for overnight repair.',
+        with: 'Vitamin C (essential cofactor for collagen hydroxylation)',
+        avoid: 'No major conflicts',
+        frequency: 'Daily (10-15g)',
+        pmid: '26840887',
+        topics: ['collagen'],
+      },
+      {
+        name: 'Reishi',
+        why: 'Calming and mildly sedating. Triterpenes modulate GABA pathways. Traditional "spirit-calming" evening mushroom.',
+        with: 'Ashwagandha, hot water (improves triterpene solubility)',
+        avoid: 'Immunosuppressants, blood thinners',
+        frequency: 'Daily (dual-extract preferred)',
+        pmid: '22207209',
+        topics: ['mushrooms'],
+      },
+      {
+        name: 'Milk Thistle',
+        why: 'Supports liver detox. Many CYP450 enzymes peak in evening/night. Evening provides substrate during peak hepatic activity.',
+        with: 'Fat source (lipophilic), phosphatidylcholine-bound form preferred',
+        avoid: 'CYP2C9/CYP3A4 medications (modest inhibition)',
+        frequency: 'Daily',
+        pmid: '26232459',
+        topics: ['milk-thistle'],
+      },
+      {
+        name: 'Holy Basil',
+        why: 'Adaptogen with anxiolytic and cortisol-lowering properties. Reduced stress and anxiety by 39% in studies.',
+        with: 'Ashwagandha, Magnesium',
+        avoid: 'Blood thinners, diabetic medications (additive)',
+        frequency: 'Daily',
+        pmid: '22614091',
+        topics: ['holy-basil'],
+      },
+    ],
+  },
+  {
+    id: 'bedtime',
+    time: '10:00 PM',
+    label: 'Bedtime',
+    icon: '🌙',
+    note: '30-60 minutes before sleep. Calming amino acids, sleep-support compounds, and overnight repair substrates.',
+    supplements: [
+      {
+        name: 'Glycine',
+        why: 'Lowers core body temperature via NMDA receptors in the SCN, triggering sleep onset. Improved sleep quality without morning grogginess.',
+        with: 'Magnesium glycinate, L-Theanine',
+        avoid: 'No major conflicts',
+        frequency: 'Nightly (3g)',
+        pmid: '17693028',
+        topics: ['glycine'],
+      },
+      {
+        name: 'L-Theanine',
+        why: 'Increases alpha brain waves within 30-40 minutes. Boosts GABA, serotonin, and dopamine. "Alert relaxation" — calming without sedation.',
+        with: 'Magnesium, Glycine. During the day: pairs with caffeine to smooth jitteriness.',
+        avoid: 'No major conflicts. Very safe.',
+        frequency: 'Nightly or as needed (200mg)',
+        pmid: '18296328',
+        topics: ['l-theanine'],
+      },
+      {
+        name: 'Melatonin',
+        why: 'Chronobiotic — shifts circadian phase. Lower doses (0.3-0.5mg) are often more effective than high doses (5-10mg) which cause morning grogginess.',
+        with: 'Magnesium (cofactor for AANAT, rate-limiting melatonin enzyme), complete darkness',
+        avoid: 'Bright light/screens, alcohol, long-term high doses',
+        frequency: 'Short-term or intermittent; consider cycling 5 on/2 off',
+        pmid: '15956094',
+        topics: ['melatonin'],
+      },
+      {
+        name: '5-HTP',
+        why: 'Immediate precursor to serotonin, which converts to melatonin at night. Supports the natural serotonin→melatonin pathway.',
+        with: 'Vitamin B6 (P5P form — cofactor for the converting enzyme), Magnesium',
+        avoid: 'SSRIs, SNRIs, MAOIs, tramadol, triptans (serotonin syndrome risk)',
+        frequency: 'Intermittent or short-term preferred',
+        pmid: '18498676',
+        topics: ['5-htp'],
+      },
+      {
+        name: 'Valerian',
+        why: 'Valerenic acid inhibits GABA breakdown, increasing GABA levels. Modest sleep quality improvement over 4-8 weeks.',
+        with: 'Other sleep herbs (passionflower, lemon balm)',
+        avoid: 'Sedatives, alcohol (additive)',
+        frequency: 'Daily for 4-8 weeks; benefits build over time',
+        pmid: '16619359',
+        topics: ['valerian'],
+      },
+      {
+        name: 'Passionflower',
+        why: 'GABA-A receptor modulator via chrysin and other flavonoids. Comparable to oxazepam for anxiety in one study.',
+        with: 'Valerian, Lemon Balm',
+        avoid: 'Sedatives (additive)',
+        frequency: 'Daily',
+        pmid: '11679026',
+        topics: ['passionflower'],
+      },
+    ],
+  },
+];
+
+const principles = [
+  {
+    title: 'Mineral competition',
+    text: 'Zinc, iron, calcium, magnesium, copper, and manganese share transporters (DMT1). Taking them together reduces absorption of each. Separate competing minerals by 2-4 hours.',
+    pmid: '1600930',
+  },
+  {
+    title: 'Fat-soluble vitamins need fat',
+    text: 'Vitamins D, K2, CoQ10, astaxanthin, and curcumin require dietary fat for absorption via micelle formation. Always take with a fat-containing meal.',
+    pmid: '20200983',
+  },
+  {
+    title: 'Splitting doses improves absorption',
+    text: 'Water-soluble vitamins like C have saturable intestinal transporters. Splitting doses maintains higher plasma levels than one large dose.',
+    pmid: '8623000',
+  },
+  {
+    title: 'Circadian timing matters',
+    text: 'The gut has its own circadian clock. Gastric acid, enzyme expression, and transporter activity all follow daily rhythms. Energizing supplements morning, calming ones evening.',
+    pmid: '24012542',
+  },
+  {
+    title: 'Taking many at once is fine — with caveats',
+    text: 'Most supplements can be taken together without issue. The exceptions are competing minerals and certain specific interactions noted in each entry. Grouping by time block is the safest approach.',
+    pmid: null,
+  },
+  {
+    title: 'Iron is the most timing-sensitive',
+    text: 'Iron absorption is uniquely complex — alternate-day dosing may outperform daily due to hepcidin kinetics. Always separate from calcium, zinc, coffee, tea, and turmeric.',
+    pmid: '28389369',
+  },
+];
+---
+
+<Base title="Supplement Schedule" description="Evidence-based timing guide for supplements — when to take what for maximum absorption and effect.">
+  <div class="schedule-page">
+    <a href="/" class="back-link">&larr; Home</a>
+    <h1>Supplement Schedule</h1>
+    <p class="schedule-intro">When you take a supplement matters almost as much as what you take. This schedule is based on absorption science, circadian biology, and mineral competition research. Each recommendation links to the PubMed study behind it.</p>
+
+    <p class="schedule-note">You don't need all of these — this is a reference for optimal timing of whatever you're taking. Use the filter to find your supplements.</p>
+
+    <div class="schedule-filter">
+      <label for="supplement-search">Find a supplement</label>
+      <input type="text" id="supplement-search" placeholder="Type to filter..." autocomplete="off" />
+    </div>
+
+    <section class="principles">
+      <h2>Key Principles</h2>
+      <div class="principles-grid">
+        {principles.map((p) => (
+          <div class="principle-card">
+            <h3>{p.title}</h3>
+            <p>{p.text}</p>
+            {p.pmid && (
+              <a href={`https://pubmed.ncbi.nlm.nih.gov/${p.pmid}/`} target="_blank" rel="noopener noreferrer" class="pmid-link">
+                PMID: {p.pmid}
+              </a>
+            )}
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <div class="timeline">
+      {timeBlocks.map((block) => (
+        <section class="time-block" id={block.id} data-block-id={block.id}>
+          <div class="time-block-header">
+            <span class="time-block-time">{block.time}</span>
+            <h2>{block.label}</h2>
+          </div>
+          <p class="time-block-note">{block.note}</p>
+
+          <div class="supplement-grid">
+            {block.supplements.map((s) => (
+              <div class="supplement-card" data-name={s.name.toLowerCase()}>
+                <h3 class="supplement-name">
+                  {s.topics[0] ? (
+                    <a href={`/${s.topics[0]}`}>{s.name}</a>
+                  ) : (
+                    s.name
+                  )}
+                </h3>
+                <p class="supplement-why">{s.why}</p>
+                <div class="supplement-details">
+                  <div class="detail-row">
+                    <span class="detail-label">Take with</span>
+                    <span class="detail-value">{s.with}</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="detail-label">Avoid with</span>
+                    <span class="detail-value avoid">{s.avoid}</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="detail-label">Frequency</span>
+                    <span class="detail-value">{s.frequency}</span>
+                  </div>
+                </div>
+                {s.pmid && (
+                  <a href={`https://pubmed.ncbi.nlm.nih.gov/${s.pmid}/`} target="_blank" rel="noopener noreferrer" class="pmid-link">
+                    PMID: {s.pmid}
+                  </a>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+  </div>
+</Base>
+
+<script>
+  const searchInput = document.getElementById('supplement-search') as HTMLInputElement;
+  const cards = document.querySelectorAll('.supplement-card');
+  const blocks = document.querySelectorAll('.time-block');
+
+  searchInput.addEventListener('input', () => {
+    const query = searchInput.value.toLowerCase().trim();
+
+    if (!query) {
+      cards.forEach((c) => (c as HTMLElement).style.display = '');
+      blocks.forEach((b) => (b as HTMLElement).style.display = '');
+      return;
+    }
+
+    blocks.forEach((block) => {
+      const blockCards = block.querySelectorAll('.supplement-card');
+      let anyVisible = false;
+
+      blockCards.forEach((card) => {
+        const name = (card as HTMLElement).dataset.name || '';
+        const text = card.textContent?.toLowerCase() || '';
+        const matches = name.includes(query) || text.includes(query);
+        (card as HTMLElement).style.display = matches ? '' : 'none';
+        if (matches) anyVisible = true;
+      });
+
+      (block as HTMLElement).style.display = anyVisible ? '' : 'none';
+    });
+  });
+</script>
+
+<style>
+  .schedule-page {
+    max-width: 52rem;
+  }
+
+  .schedule-intro {
+    font-size: 1.05rem;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-sm);
+    line-height: 1.6;
+  }
+
+  .schedule-note {
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+    font-style: italic;
+    margin-bottom: var(--space-xl);
+  }
+
+  .schedule-filter {
+    margin-bottom: var(--space-2xl);
+  }
+
+  .schedule-filter label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.875rem;
+    margin-bottom: var(--space-xs);
+  }
+
+  .schedule-filter input {
+    width: 100%;
+    max-width: 24rem;
+    padding: 0.625rem 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    background: var(--color-surface);
+    color: var(--color-text);
+  }
+
+  .schedule-filter input:focus {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 1px;
+    border-color: var(--color-accent);
+  }
+
+  /* Principles */
+  .principles {
+    margin-bottom: var(--space-2xl);
+  }
+
+  .principles h2 {
+    margin-bottom: var(--space-md);
+  }
+
+  .principles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+    gap: var(--space-md);
+  }
+
+  .principle-card {
+    padding: var(--space-md);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius);
+  }
+
+  .principle-card h3 {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: var(--space-xs);
+    color: var(--color-accent);
+  }
+
+  .principle-card p {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--color-text-muted);
+  }
+
+  /* Timeline */
+  .timeline {
+    position: relative;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 1.5rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--color-border);
+  }
+
+  .time-block {
+    position: relative;
+    padding-left: 3.5rem;
+    margin-bottom: var(--space-2xl);
+  }
+
+  .time-block-header {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-xs);
+  }
+
+  .time-block-header::before {
+    content: '';
+    position: absolute;
+    left: 0.875rem;
+    top: 0.35rem;
+    width: 1.25rem;
+    height: 1.25rem;
+    background: var(--color-accent);
+    border-radius: 50%;
+    border: 3px solid var(--color-bg);
+  }
+
+  .time-block-time {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-accent);
+    white-space: nowrap;
+  }
+
+  .time-block-header h2 {
+    font-size: 1.25rem;
+    margin: 0;
+  }
+
+  .time-block-note {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    line-height: 1.5;
+    margin-bottom: var(--space-md);
+  }
+
+  /* Supplement cards */
+  .supplement-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-sm);
+  }
+
+  .supplement-card {
+    padding: var(--space-md);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius);
+    transition: border-color 0.15s ease;
+  }
+
+  .supplement-card:hover {
+    border-color: var(--color-border);
+  }
+
+  .supplement-name {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: var(--space-xs);
+  }
+
+  .supplement-name a {
+    color: var(--color-text);
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .supplement-name a:hover {
+    color: var(--color-accent);
+  }
+
+  .supplement-why {
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-sm);
+  }
+
+  .supplement-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .detail-row {
+    display: flex;
+    gap: var(--space-sm);
+    font-size: 0.8125rem;
+    line-height: 1.4;
+  }
+
+  .detail-label {
+    flex-shrink: 0;
+    width: 5.5rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+  }
+
+  .detail-value {
+    color: var(--color-text-muted);
+  }
+
+  .detail-value.avoid {
+    color: #b45309;
+  }
+
+  .pmid-link {
+    display: inline-block;
+    margin-top: var(--space-xs);
+    font-size: 0.75rem;
+    color: var(--color-accent);
+    text-decoration: none;
+    opacity: 0.7;
+    transition: opacity 0.15s ease;
+  }
+
+  .pmid-link:hover {
+    opacity: 1;
+  }
+
+  @media (max-width: 640px) {
+    .timeline::before {
+      left: 0.75rem;
+    }
+
+    .time-block {
+      padding-left: 2.25rem;
+    }
+
+    .time-block-header::before {
+      left: 0.125rem;
+    }
+
+    .time-block-header {
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .principles-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .detail-row {
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .detail-label {
+      width: auto;
+    }
+  }
+</style>

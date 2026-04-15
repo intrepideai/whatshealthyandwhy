@@ -3,6 +3,8 @@ import Base from '../../layouts/Base.astro';
 import ProgressiveDisclosure from '../../components/ProgressiveDisclosure.astro';
 import References from '../../components/References.astro';
 import ConfidenceScore from '../../components/ConfidenceScore.astro';
+import ChallengeSection from '../../components/ChallengeSection.astro';
+import WatchButton from '../../components/WatchButton.astro';
 import { getCollection } from 'astro:content';
 import { marked } from 'marked';
 
@@ -27,7 +29,6 @@ const topicSlug = Astro.params.topic;
 // Build GitHub history URL from content path
 const contentPath = `src/content/topics/${entry.id}.md`;
 const historyUrl = `https://github.com/intrepideai/whatshealthyandwhy/commits/main/${contentPath}`;
-const submitUrl = `https://github.com/intrepideai/whatshealthyandwhy/issues/new?template=challenge.yml&title=${encodeURIComponent(`[Challenge] ${entry.data.title}`)}&labels=community-submission`;
 
 function splitContent(body: string) {
   const moreMarker = '<!-- more -->';
@@ -66,9 +67,10 @@ const { simple, medium, deep } = splitContent(entry.body || '');
     <a href={`/${topicSlug}`} class="back-link">&larr; {entry.data.topic}</a>
     <h1>{entry.data.title}</h1>
     <p class="subtopic-description">{entry.data.description}</p>
+    <WatchButton topicId={entry.id} />
   </div>
 
-  <ConfidenceScore score={entry.data.confidence} note={entry.data.confidenceNote} />
+  <ConfidenceScore score={entry.data.confidence} note={entry.data.confidenceNote} evidenceSummary={entry.data.evidenceSummary} referenceCount={entry.data.references?.length} />
 
   <ProgressiveDisclosure
     simple={simple}
@@ -79,14 +81,13 @@ const { simple, medium, deep } = splitContent(entry.body || '');
 
   <References references={entry.data.references} />
 
+  <ChallengeSection topicId={entry.id} />
+
   <div class="page-footer-actions">
     <div class="transparency-links">
       <h3>Transparency</h3>
       <a href={historyUrl} target="_blank" rel="noopener noreferrer" class="action-link">
         View edit history
-      </a>
-      <a href={submitUrl} target="_blank" rel="noopener noreferrer" class="action-link">
-        Challenge or contribute
       </a>
     </div>
     <p class="page-footer-note">Every change to this page is tracked in version control. If you have conflicting research or think something is wrong, we want to hear about it.</p>

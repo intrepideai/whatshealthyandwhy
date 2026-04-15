@@ -1,0 +1,222 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const allTopics = await getCollection('topics');
+
+// Build topic-to-tag mapping for quiz results
+const topicsByGoal: Record<string, { slug: string; title: string; topic: string }[]> = {
+  sleep: [],
+  energy: [],
+  inflammation: [],
+  gut: [],
+  immunity: [],
+  focus: [],
+  hormones: [],
+  detox: [],
+  heart: [],
+  anxiety: [],
+};
+
+const goalKeywords: Record<string, string[]> = {
+  sleep: ['sleep', 'melatonin', 'valerian', 'passionflower', 'glycine', 'magnesium', 'circadian', 'l-theanine', '5-htp'],
+  energy: ['energy', 'mitochondri', 'coq10', 'pqq', 'creatine', 'cordyceps', 'b-vitamin', 'iron', 'nad', 'shilajit', 'rhodiola', 'maca'],
+  inflammation: ['inflam', 'turmeric', 'curcumin', 'omega-3', 'boswellia', 'quercetin', 'anti-inflam', 'ginger'],
+  gut: ['gut', 'probiotic', 'ferment', 'leaky', 'microbiom', 'berberine', 'glutamine', 'butyrate', 'digestive', 'sibo'],
+  immunity: ['immun', 'elderberry', 'echinacea', 'zinc', 'vitamin-c', 'vitamin-d', 'mushroom', 'astragalus', 'colostrum'],
+  focus: ['cognit', 'brain', 'focus', 'bacopa', 'lion', 'nootropic', 'ginkgo', 'phosphatidylserine', 'acetyl-l-carnitine'],
+  hormones: ['hormone', 'thyroid', 'testosterone', 'estrogen', 'dhea', 'dim', 'maca', 'seed-cycling', 'ashwagandha'],
+  detox: ['detox', 'liver', 'glutathione', 'nac', 'milk-thistle', 'charcoal', 'heavy-metal', 'chlorella', 'spirulina'],
+  heart: ['heart', 'cardiovascular', 'blood pressure', 'cholesterol', 'omega-3', 'coq10', 'magnesium', 'nattokinase', 'taurine'],
+  anxiety: ['anxiety', 'stress', 'calm', 'ashwagandha', 'l-theanine', 'holy-basil', 'passionflower', 'gaba', 'rhodiola', 'adapto'],
+};
+
+for (const entry of allTopics) {
+  const text = `${entry.id} ${entry.data.title} ${entry.data.description} ${entry.data.topic}`.toLowerCase();
+  const topicSlug = entry.data.topic.toLowerCase().replace(/\s+/g, '-');
+  const parts = entry.id.split('/');
+  const subtopicSlug = parts[parts.length - 1];
+
+  for (const [goal, keywords] of Object.entries(goalKeywords)) {
+    if (keywords.some(k => text.includes(k))) {
+      topicsByGoal[goal].push({
+        slug: `/${topicSlug}/${subtopicSlug}`,
+        title: entry.data.title,
+        topic: entry.data.topic,
+      });
+    }
+  }
+}
+
+// Deduplicate
+for (const goal of Object.keys(topicsByGoal)) {
+  const seen = new Set();
+  topicsByGoal[goal] = topicsByGoal[goal].filter(t => {
+    if (seen.has(t.slug)) return false;
+    seen.add(t.slug);
+    return true;
+  }).slice(0, 8);
+}
+---
+
+<Base title="Start Here" description="Answer a few questions and get a personalized reading list based on your health goals.">
+  <div class="quiz-page">
+    <a href="/" class="back-link">&larr; Home</a>
+
+    <div id="quiz-intro">
+      <h1>Start Here</h1>
+      <p class="quiz-intro">With {allTopics.length}+ topics on the site, it can be hard to know where to begin. Answer a few quick questions and we'll create a personalized reading list for you.</p>
+      <button id="start-btn" class="primary-btn">Get started</button>
+    </div>
+
+    <div id="quiz-container" hidden>
+      <div class="quiz-step" data-step="1">
+        <h2>What are your top health goals?</h2>
+        <p class="quiz-hint">Select all that apply</p>
+        <div class="goal-grid">
+          <label class="goal-option"><input type="checkbox" name="goal" value="sleep" /><span>Better sleep</span></label>
+          <label class="goal-option"><input type="checkbox" name="goal" value="energy" /><span>More energy</span></label>
+          <label class="goal-option"><input type="checkbox" name="goal" value="inflammation" /><span>Reduce inflammation</span></label>
+          <label class="goal-option"><input type="checkbox" name="goal" value="gut" /><span>Gut health</span></label>
+          <label class="goal-option"><input type="checkbox" name="goal" value="immunity" /><span>Stronger immunity</span></label>
+          <label class="goal-option"><input type="checkbox" name="goal" value="focus" /><span>Focus & cognition</span></label>
+          <label class="goal-option"><input type="checkbox" name="goal" value="hormones" /><span>Hormone balance</span></label>
+          <label class="goal-option"><input type="checkbox" name="goal" value="detox" /><span>Detox & liver support</span></label>
+          <label class="goal-option"><input type="checkbox" name="goal" value="heart" /><span>Heart health</span></label>
+          <label class="goal-option"><input type="checkbox" name="goal" value="anxiety" /><span>Stress & anxiety</span></label>
+        </div>
+        <button id="quiz-submit" class="primary-btn" disabled>Show my reading list</button>
+      </div>
+    </div>
+
+    <div id="quiz-results" hidden>
+      <h2>Your Personalized Reading List</h2>
+      <p class="results-intro">Based on your goals, here are the most relevant topics to start with:</p>
+      <div id="results-container"></div>
+      <div class="results-footer">
+        <a href="/schedule" class="primary-btn">See supplement timing</a>
+        <a href="/tools/interactions" class="secondary-btn">Check interactions</a>
+        <button id="retake-btn" class="secondary-btn">Retake quiz</button>
+      </div>
+    </div>
+  </div>
+</Base>
+
+<script define:vars={{ topicsByGoal }}>
+  const startBtn = document.getElementById('start-btn');
+  const introEl = document.getElementById('quiz-intro');
+  const containerEl = document.getElementById('quiz-container');
+  const resultsEl = document.getElementById('quiz-results');
+  const resultsContainer = document.getElementById('results-container');
+  const submitBtn = document.getElementById('quiz-submit');
+  const retakeBtn = document.getElementById('retake-btn');
+  const checkboxes = document.querySelectorAll('input[name="goal"]');
+
+  startBtn.addEventListener('click', () => {
+    introEl.hidden = true;
+    containerEl.hidden = false;
+  });
+
+  checkboxes.forEach(cb => cb.addEventListener('change', () => {
+    const any = Array.from(checkboxes).some(c => c.checked);
+    submitBtn.disabled = !any;
+  }));
+
+  submitBtn.addEventListener('click', () => {
+    const selected = Array.from(checkboxes).filter(c => c.checked).map(c => c.value);
+
+    const goalLabels = {
+      sleep: 'Better Sleep', energy: 'More Energy', inflammation: 'Reduce Inflammation',
+      gut: 'Gut Health', immunity: 'Immunity', focus: 'Focus & Cognition',
+      hormones: 'Hormone Balance', detox: 'Detox & Liver', heart: 'Heart Health',
+      anxiety: 'Stress & Anxiety',
+    };
+
+    let html = '';
+    for (const goal of selected) {
+      const topics = topicsByGoal[goal] || [];
+      if (topics.length === 0) continue;
+      html += `<div class="result-section">
+        <h3>${goalLabels[goal] || goal}</h3>
+        <div class="result-links">
+          ${topics.map(t => `<a href="${t.slug}" class="result-link">
+            <span class="result-topic">${t.topic}</span>
+            <span class="result-title">${t.title}</span>
+          </a>`).join('')}
+        </div>
+      </div>`;
+    }
+
+    resultsContainer.innerHTML = html;
+    containerEl.hidden = true;
+    resultsEl.hidden = false;
+  });
+
+  retakeBtn.addEventListener('click', () => {
+    checkboxes.forEach(c => c.checked = false);
+    submitBtn.disabled = true;
+    resultsEl.hidden = true;
+    containerEl.hidden = false;
+  });
+</script>
+
+<style>
+  .quiz-page { max-width: 42rem; }
+
+  .quiz-intro {
+    font-size: 1.05rem; color: var(--color-text-muted); margin-bottom: var(--space-xl); line-height: 1.6;
+  }
+
+  .quiz-hint { font-size: 0.875rem; color: var(--color-text-light); margin-bottom: var(--space-md); }
+
+  .primary-btn {
+    display: inline-block; padding: 0.625rem 1.25rem; background: var(--color-accent); color: #fff;
+    border: none; border-radius: var(--radius); font-family: var(--font-body); font-size: 0.9375rem;
+    font-weight: 600; cursor: pointer; text-decoration: none; transition: background 0.15s ease;
+  }
+  .primary-btn:hover:not(:disabled) { background: var(--color-accent-hover); }
+  .primary-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .secondary-btn {
+    display: inline-block; padding: 0.625rem 1.25rem; background: none;
+    border: 1px solid var(--color-border); border-radius: var(--radius);
+    font-family: var(--font-body); font-size: 0.9375rem; color: var(--color-text-muted);
+    cursor: pointer; text-decoration: none; transition: border-color 0.15s ease, color 0.15s ease;
+  }
+  .secondary-btn:hover { border-color: var(--color-accent); color: var(--color-accent); }
+
+  .goal-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-sm);
+    margin-bottom: var(--space-xl);
+  }
+
+  .goal-option {
+    display: flex; align-items: center; gap: var(--space-sm); padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--color-border); border-radius: var(--radius); cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .goal-option:hover { border-color: var(--color-accent); background: var(--color-accent-light); }
+  .goal-option:has(input:checked) { border-color: var(--color-accent); background: var(--color-accent-light); }
+  .goal-option input { accent-color: var(--color-accent); }
+  .goal-option span { font-size: 0.9375rem; }
+
+  .results-intro { color: var(--color-text-muted); margin-bottom: var(--space-xl); }
+
+  :global(.result-section) { margin-bottom: var(--space-xl); }
+  :global(.result-section h3) { font-size: 1rem; color: var(--color-accent); margin-bottom: var(--space-sm); }
+  :global(.result-links) { display: flex; flex-direction: column; gap: var(--space-xs); }
+  :global(.result-link) {
+    display: flex; flex-direction: column; padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--color-border-light); border-radius: var(--radius);
+    text-decoration: none; transition: border-color 0.15s ease;
+  }
+  :global(.result-link:hover) { border-color: var(--color-accent); }
+  :global(.result-topic) { font-size: 0.75rem; color: var(--color-text-light); text-transform: uppercase; letter-spacing: 0.03em; }
+  :global(.result-title) { font-size: 0.9375rem; color: var(--color-text); font-weight: 500; }
+
+  .results-footer { display: flex; flex-wrap: wrap; gap: var(--space-sm); margin-top: var(--space-xl); }
+
+  @media (max-width: 640px) {
+    .goal-grid { grid-template-columns: 1fr; }
+  }
+</style>

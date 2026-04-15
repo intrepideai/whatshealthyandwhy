@@ -1,0 +1,75 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Search" description="Search all health topics, supplements, and research on the site.">
+  <div class="search-page">
+    <h1>Search</h1>
+    <div id="search"></div>
+  </div>
+</Base>
+
+<script is:inline>
+  (async function() {
+    try {
+      var pagefind = await import('/pagefind/pagefind.js');
+      await pagefind.init();
+
+      var searchEl = document.getElementById('search');
+      new pagefind.PagefindUI({
+        element: searchEl,
+        showSubResults: true,
+        showImages: false,
+      });
+    } catch(e) {
+      var searchEl = document.getElementById('search');
+      if (searchEl) searchEl.innerHTML = '<p class="search-fallback">Search is available after the site is built. Use the <a href="/explore/good-for-you">topic browser</a> instead.</p>';
+    }
+  })();
+</script>
+
+<link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+
+<style>
+  .search-page {
+    max-width: 42rem;
+    margin: 0 auto;
+  }
+
+  .search-page h1 {
+    margin-bottom: var(--space-lg);
+  }
+
+  .search-fallback {
+    color: var(--color-text-muted);
+    font-style: italic;
+  }
+
+  .search-fallback a {
+    color: var(--color-accent);
+  }
+
+  /* Pagefind UI theme overrides */
+  :global(.pagefind-ui__search-input) {
+    font-family: var(--font-body) !important;
+    border-color: var(--color-border) !important;
+    border-radius: var(--radius) !important;
+    color: var(--color-text) !important;
+    background: var(--color-surface) !important;
+  }
+
+  :global(.pagefind-ui__search-input:focus) {
+    outline: 2px solid var(--color-accent) !important;
+    border-color: var(--color-accent) !important;
+  }
+
+  :global(.pagefind-ui__result-link) {
+    color: var(--color-accent) !important;
+    font-family: var(--font-heading) !important;
+  }
+
+  :global(.pagefind-ui__result-excerpt) {
+    font-family: var(--font-body) !important;
+    color: var(--color-text-muted) !important;
+  }
+</style>

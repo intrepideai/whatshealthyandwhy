@@ -1,0 +1,133 @@
+---
+import Base from '../layouts/Base.astro';
+export const prerender = false;
+
+import { db } from '../db/index';
+import { challenges, users } from '../db/schema';
+import { eq, sql, desc } from 'drizzle-orm';
+
+let topContributors: { displayName: string | null; email: string; acceptedCount: number; trustLevel: number }[] = [];
+let recentChallenges: { claim: string; topicId: string; status: string; createdAt: Date; displayName: string | null; email: string }[] = [];
+
+try {
+  topContributors = await db
+    .select({
+      displayName: users.displayName,
+      email: users.email,
+      acceptedCount: sql<number>`count(*) filter (where ${challenges.status} = 'accepted')`,
+      trustLevel: users.trustLevel,
+    })
+    .from(users)
+    .innerJoin(challenges, eq(challenges.userId, users.id))
+    .groupBy(users.id)
+    .orderBy(desc(sql`count(*) filter (where ${challenges.status} = 'accepted')`))
+    .limit(20);
+
+  recentChallenges = await db
+    .select({
+      claim: challenges.claim,
+      topicId: challenges.topicId,
+      status: challenges.status,
+      createdAt: challenges.createdAt,
+      displayName: users.displayName,
+      email: users.email,
+    })
+    .from(challenges)
+    .innerJoin(users, eq(challenges.userId, users.id))
+    .where(eq(challenges.status, 'accepted'))
+    .orderBy(desc(challenges.resolvedAt))
+    .limit(10);
+} catch {
+  // DB not available — show empty state
+}
+---
+
+<Base title="Contributors" description="Community members who have improved our research through evidence-based challenges.">
+  <div class="contributors-page">
+    <a href="/" class="back-link">&larr; Home</a>
+    <h1>Contributors</h1>
+    <p class="contributors-intro">These community members have improved our research by submitting evidence-based challenges. When a challenge is accepted, the site gets better and the contributor earns trust.</p>
+
+    {topContributors.length > 0 ? (
+      <section class="leaderboard">
+        <h2>Top Contributors</h2>
+        <div class="leaderboard-list">
+          {topContributors.map((c, i) => (
+            <div class="contributor-row">
+              <span class="contributor-rank">#{i + 1}</span>
+              <div class="contributor-info">
+                <span class="contributor-name">{c.displayName || c.email.split('@')[0]}</span>
+                <span class="contributor-stats">{c.acceptedCount} accepted {c.acceptedCount === 1 ? 'challenge' : 'challenges'}</span>
+              </div>
+              <span class="contributor-trust">Level {c.trustLevel}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+    ) : (
+      <section class="empty-state">
+        <h2>No contributors yet</h2>
+        <p>Be the first to improve our research. Visit any topic page and submit a challenge with counter-evidence.</p>
+        <a href="/contribute" class="contribute-link">Learn how to contribute</a>
+      </section>
+    )}
+
+    {recentChallenges.length > 0 && (
+      <section class="recent-section">
+        <h2>Recently Accepted Challenges</h2>
+        <div class="recent-list">
+          {recentChallenges.map((c) => (
+            <div class="recent-card">
+              <span class="recent-topic">{c.topicId.replace('/', ' / ')}</span>
+              <p class="recent-claim">{c.claim}</p>
+              <span class="recent-by">by {c.displayName || c.email.split('@')[0]}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+  </div>
+</Base>
+
+<style>
+  .contributors-page { max-width: 42rem; }
+  .contributors-intro { color: var(--color-text-muted); margin-bottom: var(--space-2xl); line-height: 1.6; }
+
+  .leaderboard { margin-bottom: var(--space-2xl); }
+  .leaderboard h2 { margin-bottom: var(--space-md); }
+
+  .leaderboard-list { display: flex; flex-direction: column; gap: var(--space-xs); }
+
+  .contributor-row {
+    display: flex; align-items: center; gap: var(--space-md); padding: var(--space-sm) var(--space-md);
+    background: var(--color-surface); border: 1px solid var(--color-border-light); border-radius: var(--radius);
+  }
+  .contributor-rank { font-weight: 600; color: var(--color-accent); min-width: 2rem; }
+  .contributor-info { flex: 1; display: flex; flex-direction: column; }
+  .contributor-name { font-weight: 600; font-size: 0.9375rem; }
+  .contributor-stats { font-size: 0.8125rem; color: var(--color-text-muted); }
+  .contributor-trust {
+    font-size: 0.75rem; font-weight: 600; padding: 0.125rem 0.5rem;
+    background: var(--color-accent-light); color: var(--color-accent); border-radius: 1rem;
+  }
+
+  .empty-state { text-align: center; padding: var(--space-2xl); }
+  .empty-state h2 { margin-bottom: var(--space-sm); }
+  .empty-state p { color: var(--color-text-muted); margin-bottom: var(--space-md); }
+  .contribute-link {
+    display: inline-block; padding: 0.5rem 1rem; background: var(--color-accent); color: #fff;
+    border-radius: var(--radius); text-decoration: none; font-weight: 600; font-size: 0.9375rem;
+  }
+  .contribute-link:hover { background: var(--color-accent-hover); }
+
+  .recent-section h2 { margin-bottom: var(--space-md); }
+  .recent-list { display: flex; flex-direction: column; gap: var(--space-sm); }
+
+  .recent-card {
+    padding: var(--space-md); border: 1px solid var(--color-border-light);
+    border-left: 3px solid var(--color-accent); border-radius: var(--radius);
+  }
+  .recent-topic { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--color-text-light); }
+  .recent-claim { font-size: 0.9375rem; line-height: 1.5; margin: 0.25rem 0; }
+  .recent-by { font-size: 0.8125rem; color: var(--color-text-muted); }
+</style>

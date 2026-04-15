@@ -5,13 +5,22 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && pagefind --site dist/client",
     "preview": "astro preview",
     "astro": "astro"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.89.0",
+    "@astrojs/node": "9",
     "@astrojs/sitemap": "^3.7.2",
+    "@azure/communication-email": "^1.1.0",
     "astro": "5",
-    "marked": "^18.0.0"
+    "drizzle-orm": "^0.45.2",
+    "marked": "^18.0.0",
+    "postgres": "^3.4.9"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.31.10",
+    "pagefind": "^1.5.2"
   }
 }

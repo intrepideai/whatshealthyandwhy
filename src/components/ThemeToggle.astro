@@ -1,0 +1,93 @@
+<!-- Manual dark/light mode toggle that overrides circadian theme -->
+<button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+  <span class="theme-icon" id="theme-icon">
+    <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+    <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+    </svg>
+  </span>
+</button>
+
+<script>
+  const toggle = document.getElementById('theme-toggle')!;
+  const stored = localStorage.getItem('theme-override');
+
+  function applyTheme(theme: string | null) {
+    if (theme === 'dark' || theme === 'light') {
+      document.documentElement.setAttribute('data-theme', theme);
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+    }
+    updateIcon(theme);
+  }
+
+  function updateIcon(theme: string | null) {
+    const isDark = theme === 'dark' ||
+      (!theme && ['night', 'evening'].includes(document.documentElement.getAttribute('data-time') || ''));
+    toggle.classList.toggle('is-dark', isDark);
+  }
+
+  applyTheme(stored);
+
+  toggle.addEventListener('click', () => {
+    const current = localStorage.getItem('theme-override');
+    let next: string | null;
+
+    if (current === 'dark') {
+      next = 'light';
+    } else if (current === 'light') {
+      next = null; // back to auto/circadian
+    } else {
+      next = 'dark';
+    }
+
+    if (next) {
+      localStorage.setItem('theme-override', next);
+    } else {
+      localStorage.removeItem('theme-override');
+    }
+    applyTheme(next);
+  });
+</script>
+
+<style>
+  .theme-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    background: none;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    color: var(--color-text-muted);
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease;
+    margin-left: var(--space-xs);
+  }
+
+  .theme-toggle:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  .theme-icon {
+    display: flex;
+    align-items: center;
+  }
+
+  .icon-moon { display: none; }
+
+  .theme-toggle.is-dark .icon-sun { display: none; }
+  .theme-toggle.is-dark .icon-moon { display: block; }
+</style>

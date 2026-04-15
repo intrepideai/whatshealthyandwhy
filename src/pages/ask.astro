@@ -71,18 +71,29 @@ import Base from '../layouts/Base.astro';
     if (el) el.remove();
   }
 
-  async function getResponse(question: string): Promise<string> {
-    // TODO: Replace this with your LLM API call
-    // Example:
-    // const res = await fetch('/api/chat', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ question })
-    // });
-    // const data = await res.json();
-    // return data.answer;
+  const conversationHistory: { role: string; content: string }[] = [];
 
-    return "I'm not connected to an AI yet — this is where the LLM will respond. For now, try browsing our <a href='/explore/good-for-you'>topics</a> or check the <a href='/lookup'>condition lookup</a> to find what you need.";
+  async function getResponse(question: string): Promise<string> {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question, history: conversationHistory }),
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      return data.error || 'Something went wrong. Please try again.';
+    }
+
+    conversationHistory.push({ role: 'user', content: question });
+    conversationHistory.push({ role: 'assistant', content: data.answer });
+
+    // Convert markdown-like formatting to HTML
+    return data.answer
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\n\n/g, '</p><p>')
+      .replace(/\n- /g, '</p><li>')
+      .replace(/PMID:\s*(\d+)/g, '<a href="https://pubmed.ncbi.nlm.nih.gov/$1/" target="_blank" rel="noopener noreferrer">PMID: $1</a>');
   }
 
   form.addEventListener('submit', async (e) => {

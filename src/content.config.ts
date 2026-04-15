@@ -11,6 +11,14 @@ const topics = defineCollection({
     level: z.number().optional(),
     confidence: z.number().min(1).max(5).optional(),
     confidenceNote: z.string().optional(),
+    evidenceSummary: z.object({
+      rctCount: z.number().optional(),
+      observationalCount: z.number().optional(),
+      metaAnalysisCount: z.number().optional(),
+      totalParticipants: z.string().optional(),
+      replicated: z.boolean().optional(),
+      newestStudyYear: z.number().optional(),
+    }).optional(),
     references: z.array(
       z.object({
         id: z.string(),
@@ -38,6 +46,15 @@ const products = defineCollection({
     certifications: z.array(z.string()).optional(),
     url: z.string(),
     relatedTopics: z.array(z.string()).optional(),
+    quality: z.object({
+      thirdPartyTested: z.boolean().optional(),
+      testingOrg: z.string().optional(),
+      purity: z.string().optional(),
+      heavyMetals: z.enum(['pass', 'fail', 'not-tested']).optional(),
+      labelAccuracy: z.string().optional(),
+      coaAvailable: z.boolean().optional(),
+      overallScore: z.number().min(1).max(5).optional(),
+    }).optional(),
   }),
 });
 

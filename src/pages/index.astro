@@ -54,9 +54,11 @@ const entryPoints = [
     <h1>What's Healthy and Why</h1>
     <p>Peer-reviewed health research, explained at the depth you want.<br />Every claim is cited. Every source is real.</p>
     <div class="home-actions">
-      <a href="/levels" class="levels-banner">Start your health journey &rarr;</a>
-      <a href="/lookup" class="lookup-banner">Symptom lookup</a>
-      <a href="/ask" class="ask-banner">Ask a question</a>
+      <a href="/tools/quiz" class="action-btn primary">Start here &rarr;</a>
+      <a href="/ask" class="action-btn">Ask AI</a>
+      <a href="/schedule" class="action-btn">Supplement schedule</a>
+      <a href="/good-for" class="action-btn">Good for...</a>
+      <a href="/search" class="action-btn">Search</a>
     </div>
   </div>
 
@@ -74,62 +76,65 @@ const entryPoints = [
 <style>
   .home-hero {
     text-align: center;
-    padding: var(--space-2xl) 0 var(--space-3xl);
+    padding: var(--space-3xl) 0;
   }
 
   .home-hero h1 {
-    font-size: 2.5rem;
+    font-size: 2.75rem;
     margin-bottom: var(--space-sm);
   }
 
   .home-hero p {
-    font-size: 1.1rem;
+    font-size: 1.125rem;
     color: var(--color-text-muted);
-    max-width: 32rem;
+    max-width: 36rem;
     margin: 0 auto;
-    line-height: 1.6;
+    line-height: 1.7;
   }
 
   .home-actions {
     margin-top: var(--space-xl);
-    text-align: center;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
   }
 
-  .home-actions a {
-    display: inline-block;
-    margin: 0 4px;
-    padding: 8px 16px;
-    border: 1px solid var(--color-accent);
+  .action-btn {
+    padding: 0.5rem 1rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
     border-radius: var(--radius);
     font-weight: 600;
-    font-size: 14px;
+    font-size: 0.875rem;
     line-height: 1;
+    color: var(--color-text);
     text-decoration: none;
-    vertical-align: middle;
+    white-space: nowrap;
+    transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
   }
 
-  .levels-banner {
+  .action-btn:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  .action-btn.primary {
     background: var(--color-accent);
+    border-color: var(--color-accent);
     color: white;
   }
 
-  .levels-banner:hover {
+  .action-btn.primary:hover {
     background: var(--color-accent-hover);
     border-color: var(--color-accent-hover);
-  }
-
-  .lookup-banner, .ask-banner {
-    background: transparent;
-    color: var(--color-accent);
-  }
-
-  .lookup-banner:hover, .ask-banner:hover {
-    background: var(--color-accent-light);
+    color: white;
   }
 
   .entry-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: var(--space-lg);
   }
 
@@ -173,18 +178,23 @@ const entryPoints = [
     border-radius: 999px;
   }
 
+  @media (max-width: 1024px) {
+    .entry-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
   @media (max-width: 640px) {
     .home-hero h1 {
       font-size: 1.8rem;
     }
 
-    .entry-grid {
-      grid-template-columns: 1fr;
+    .home-hero {
+      padding: var(--space-2xl) 0;
     }
 
-    .home-actions a {
-      display: block;
-      margin: 4px auto;
+    .entry-grid {
+      grid-template-columns: 1fr;
     }
   }
 </style>

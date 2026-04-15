@@ -1,0 +1,227 @@
+---
+import Base from '../../layouts/Base.astro';
+import interactionData from '../../data/interactions.json';
+---
+
+<Base title="Interaction Checker" description="Check for conflicts and synergies between your supplements.">
+  <div class="checker-page">
+    <a href="/" class="back-link">&larr; Home</a>
+    <h1>Interaction Checker</h1>
+    <p class="checker-intro">Select the supplements you take to check for absorption conflicts, dangerous interactions, and beneficial synergies.</p>
+
+    <div class="checker-input">
+      <label for="supplement-input">Add supplements</label>
+      <input type="text" id="supplement-input" placeholder="Type a supplement name..." autocomplete="off" />
+      <div class="suggestions" id="suggestions" hidden></div>
+    </div>
+
+    <div class="selected-list" id="selected-list"></div>
+
+    <div id="results" hidden>
+      <div id="critical-results" class="results-section" hidden>
+        <h2 class="results-heading critical">Critical Interactions</h2>
+        <div class="results-list" id="critical-list"></div>
+      </div>
+      <div id="conflict-results" class="results-section" hidden>
+        <h2 class="results-heading conflict">Conflicts</h2>
+        <div class="results-list" id="conflict-list"></div>
+      </div>
+      <div id="synergy-results" class="results-section" hidden>
+        <h2 class="results-heading synergy">Synergies</h2>
+        <div class="results-list" id="synergy-list"></div>
+      </div>
+      <div id="no-issues" class="results-section" hidden>
+        <p class="no-issues-text">No known interactions found between your selected supplements.</p>
+      </div>
+    </div>
+  </div>
+</Base>
+
+<script define:vars={{ interactionData }}>
+  const conflicts = interactionData.conflicts;
+  const synergies = interactionData.synergies;
+
+  const allNames = new Set();
+  conflicts.forEach(c => { allNames.add(c.a); allNames.add(c.b); });
+  synergies.forEach(s => { allNames.add(s.a); allNames.add(s.b); });
+  const supplementNames = Array.from(allNames).sort();
+
+  const selected = [];
+  const input = document.getElementById('supplement-input');
+  const suggestionsEl = document.getElementById('suggestions');
+  const selectedList = document.getElementById('selected-list');
+  const resultsEl = document.getElementById('results');
+
+  function normalize(s) { return s.toLowerCase().trim(); }
+
+  input.addEventListener('input', () => {
+    const q = normalize(input.value);
+    if (!q) { suggestionsEl.hidden = true; return; }
+
+    const matches = supplementNames.filter(n =>
+      normalize(n).includes(q) && !selected.includes(n)
+    ).slice(0, 8);
+
+    if (matches.length === 0) { suggestionsEl.hidden = true; return; }
+
+    suggestionsEl.innerHTML = matches.map(m =>
+      `<button class="suggestion-item" data-name="${m}">${m}</button>`
+    ).join('');
+    suggestionsEl.hidden = false;
+  });
+
+  suggestionsEl.addEventListener('click', (e) => {
+    const btn = e.target.closest('.suggestion-item');
+    if (!btn) return;
+    addSupplement(btn.dataset.name);
+    input.value = '';
+    suggestionsEl.hidden = true;
+    input.focus();
+  });
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const first = suggestionsEl.querySelector('.suggestion-item');
+      if (first) { addSupplement(first.dataset.name); input.value = ''; suggestionsEl.hidden = true; }
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.checker-input')) suggestionsEl.hidden = true;
+  });
+
+  function addSupplement(name) {
+    if (selected.includes(name)) return;
+    selected.push(name);
+    renderSelected();
+    checkInteractions();
+  }
+
+  function removeSupplement(name) {
+    const idx = selected.indexOf(name);
+    if (idx > -1) selected.splice(idx, 1);
+    renderSelected();
+    checkInteractions();
+  }
+
+  function renderSelected() {
+    selectedList.innerHTML = selected.map(s =>
+      `<span class="selected-tag">${s}<button class="remove-tag" data-name="${s}" aria-label="Remove ${s}">&times;</button></span>`
+    ).join('');
+  }
+
+  selectedList.addEventListener('click', (e) => {
+    const btn = e.target.closest('.remove-tag');
+    if (btn) removeSupplement(btn.dataset.name);
+  });
+
+  function checkInteractions() {
+    if (selected.length < 2) { resultsEl.hidden = true; return; }
+
+    const foundCritical = [];
+    const foundConflicts = [];
+    const foundSynergies = [];
+
+    for (const c of conflicts) {
+      if (selected.includes(c.a) && selected.includes(c.b)) {
+        if (c.severity === 'critical') foundCritical.push(c);
+        else foundConflicts.push(c);
+      }
+    }
+    for (const s of synergies) {
+      if (selected.includes(s.a) && selected.includes(s.b)) {
+        foundSynergies.push(s);
+      }
+    }
+
+    const criticalSection = document.getElementById('critical-results');
+    const conflictSection = document.getElementById('conflict-results');
+    const synergySection = document.getElementById('synergy-results');
+    const noIssues = document.getElementById('no-issues');
+
+    criticalSection.hidden = foundCritical.length === 0;
+    conflictSection.hidden = foundConflicts.length === 0;
+    synergySection.hidden = foundSynergies.length === 0;
+    noIssues.hidden = foundCritical.length > 0 || foundConflicts.length > 0 || foundSynergies.length > 0;
+
+    document.getElementById('critical-list').innerHTML = foundCritical.map(c => renderInteraction(c, 'critical')).join('');
+    document.getElementById('conflict-list').innerHTML = foundConflicts.map(c => renderInteraction(c, 'conflict')).join('');
+    document.getElementById('synergy-list').innerHTML = foundSynergies.map(s => renderInteraction(s, 'synergy')).join('');
+
+    resultsEl.hidden = false;
+  }
+
+  function renderInteraction(item, type) {
+    const pmidLink = item.pmid ? `<a href="https://pubmed.ncbi.nlm.nih.gov/${item.pmid}/" target="_blank" rel="noopener noreferrer" class="pmid-link">PMID: ${item.pmid}</a>` : '';
+    return `<div class="interaction-card ${type}">
+      <div class="interaction-pair"><strong>${item.a}</strong> + <strong>${item.b}</strong></div>
+      <p class="interaction-reason">${item.reason}</p>
+      ${pmidLink}
+    </div>`;
+  }
+</script>
+
+<style>
+  .checker-page { max-width: 42rem; }
+
+  .checker-intro {
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-xl);
+    line-height: 1.6;
+  }
+
+  .checker-input { position: relative; margin-bottom: var(--space-md); }
+  .checker-input label { display: block; font-weight: 600; font-size: 0.875rem; margin-bottom: var(--space-xs); }
+  .checker-input input {
+    width: 100%; padding: 0.625rem 0.75rem; border: 1px solid var(--color-border); border-radius: var(--radius);
+    font-family: var(--font-body); font-size: 1rem; background: var(--color-surface); color: var(--color-text);
+  }
+  .checker-input input:focus { outline: 2px solid var(--color-accent); outline-offset: 1px; border-color: var(--color-accent); }
+
+  .suggestions {
+    position: absolute; top: 100%; left: 0; right: 0; background: var(--color-surface);
+    border: 1px solid var(--color-border); border-radius: var(--radius); margin-top: 2px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 10; max-height: 240px; overflow-y: auto;
+  }
+
+  :global(.suggestion-item) {
+    display: block; width: 100%; padding: 0.5rem 0.75rem; border: none; background: none;
+    font-family: var(--font-body); font-size: 0.9375rem; color: var(--color-text);
+    text-align: left; cursor: pointer;
+  }
+  :global(.suggestion-item:hover) { background: var(--color-accent-light); color: var(--color-accent); }
+
+  .selected-list { display: flex; flex-wrap: wrap; gap: var(--space-xs); margin-bottom: var(--space-xl); }
+
+  :global(.selected-tag) {
+    display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.625rem;
+    background: var(--color-accent-light); color: var(--color-accent); border-radius: 1rem;
+    font-size: 0.8125rem; font-weight: 600;
+  }
+  :global(.remove-tag) {
+    background: none; border: none; color: var(--color-accent); cursor: pointer;
+    font-size: 1rem; line-height: 1; padding: 0 0.125rem; opacity: 0.7;
+  }
+  :global(.remove-tag:hover) { opacity: 1; }
+
+  .results-section { margin-bottom: var(--space-xl); }
+  .results-heading { font-size: 1rem; margin-bottom: var(--space-sm); }
+  .results-heading.critical { color: #dc2626; }
+  .results-heading.conflict { color: #b45309; }
+  .results-heading.synergy { color: var(--color-accent); }
+
+  :global(.interaction-card) {
+    padding: var(--space-md); border: 1px solid var(--color-border); border-radius: var(--radius);
+    margin-bottom: var(--space-sm); background: var(--color-surface);
+  }
+  :global(.interaction-card.critical) { border-left: 3px solid #dc2626; }
+  :global(.interaction-card.conflict) { border-left: 3px solid #f59e0b; }
+  :global(.interaction-card.synergy) { border-left: 3px solid var(--color-accent); }
+  :global(.interaction-pair) { font-size: 0.9375rem; margin-bottom: var(--space-xs); }
+  :global(.interaction-reason) { font-size: 0.875rem; color: var(--color-text-muted); line-height: 1.5; }
+  :global(.pmid-link) { display: inline-block; margin-top: var(--space-xs); font-size: 0.75rem; color: var(--color-accent); text-decoration: none; opacity: 0.7; }
+  :global(.pmid-link:hover) { opacity: 1; }
+
+  .no-issues-text { color: var(--color-accent); font-style: italic; padding: var(--space-md); background: var(--color-accent-light); border-radius: var(--radius); }
+</style>

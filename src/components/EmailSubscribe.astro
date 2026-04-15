@@ -1,0 +1,119 @@
+<!-- Email digest subscription form -->
+<div class="email-subscribe" id="email-subscribe">
+  <h3>Weekly Research Digest</h3>
+  <p>Get new topics and updated research delivered to your inbox.</p>
+  <form id="subscribe-form" class="subscribe-form">
+    <input type="email" id="subscribe-email" placeholder="you@example.com" required autocomplete="email" />
+    <button type="submit">Subscribe</button>
+  </form>
+  <p class="subscribe-success" id="subscribe-success" hidden>You're subscribed. Watch for our weekly digest.</p>
+  <p class="subscribe-error" id="subscribe-error" hidden></p>
+</div>
+
+<script>
+  const form = document.getElementById('subscribe-form') as HTMLFormElement;
+  const successEl = document.getElementById('subscribe-success')!;
+  const errorEl = document.getElementById('subscribe-error')!;
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorEl.hidden = true;
+    const email = (form.elements.namedItem('subscribe-email') as HTMLInputElement).value;
+
+    try {
+      const res = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      if (res.ok) {
+        form.hidden = true;
+        successEl.hidden = false;
+      } else {
+        const data = await res.json();
+        errorEl.textContent = data.error || 'Something went wrong.';
+        errorEl.hidden = false;
+      }
+    } catch {
+      errorEl.textContent = 'Network error. Please try again.';
+      errorEl.hidden = false;
+    }
+  });
+</script>
+
+<style>
+  .email-subscribe {
+    margin-top: var(--space-xl);
+    padding: var(--space-xl) var(--space-lg);
+    max-width: 64rem;
+    margin-left: auto;
+    margin-right: auto;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    text-align: center;
+  }
+
+  .email-subscribe h3 {
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    margin-bottom: var(--space-xs);
+  }
+
+  .email-subscribe > p {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-md);
+  }
+
+  .subscribe-form {
+    display: flex;
+    gap: var(--space-xs);
+    max-width: 24rem;
+    margin: 0 auto;
+  }
+
+  .subscribe-form input {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    background: var(--color-bg);
+    color: var(--color-text);
+  }
+
+  .subscribe-form input:focus {
+    outline: 2px solid var(--color-accent);
+    border-color: var(--color-accent);
+  }
+
+  .subscribe-form button {
+    padding: 0.5rem 1rem;
+    background: var(--color-accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .subscribe-form button:hover {
+    background: var(--color-accent-hover);
+  }
+
+  .subscribe-success {
+    color: var(--color-accent);
+    font-size: 0.875rem;
+  }
+
+  .subscribe-error {
+    color: #991b1b;
+    font-size: 0.875rem;
+  }
+</style>

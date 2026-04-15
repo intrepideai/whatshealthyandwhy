@@ -1,0 +1,157 @@
+<!-- Topic request form with honeypot and timing-based bot protection -->
+<div class="topic-request-form" id="topic-request-form">
+  <form id="request-form">
+    <label for="request-topic">What topic should we cover?</label>
+    <input
+      type="text"
+      id="request-topic"
+      name="topicName"
+      required
+      minlength="2"
+      maxlength="200"
+      placeholder="e.g., Ashwagandha, mold in homes, water fasting"
+    />
+
+    <label for="request-reason">Why is this important?</label>
+    <textarea
+      id="request-reason"
+      name="reason"
+      required
+      minlength="10"
+      maxlength="2000"
+      rows="3"
+      placeholder="Tell us why this topic matters and what you'd like to know about it."
+    ></textarea>
+
+    <!-- Honeypot — hidden from real users -->
+    <div style="position:absolute;left:-9999px;" aria-hidden="true">
+      <label for="request-website">Website</label>
+      <input type="text" id="request-website" name="website" tabindex="-1" autocomplete="off" />
+    </div>
+
+    <button type="submit" id="request-submit-btn">Submit suggestion</button>
+
+    <p class="request-error" id="request-error" hidden></p>
+    <p class="request-success" id="request-success" hidden>Topic suggestion submitted. Thank you for helping us improve.</p>
+  </form>
+</div>
+
+<script>
+  const form = document.getElementById('request-form') as HTMLFormElement;
+  const submitBtn = document.getElementById('request-submit-btn') as HTMLButtonElement;
+  const errorEl = document.getElementById('request-error')!;
+  const successEl = document.getElementById('request-success')!;
+
+  // Record render timestamp for timing check
+  const renderTime = Date.now();
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorEl.hidden = true;
+    successEl.hidden = true;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting...';
+
+    const topicName = (form.elements.namedItem('topicName') as HTMLInputElement).value;
+    const reason = (form.elements.namedItem('reason') as HTMLTextAreaElement).value;
+    const website = (form.elements.namedItem('website') as HTMLInputElement).value;
+
+    try {
+      const res = await fetch('/api/topic-requests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ topicName, reason, website, _ts: renderTime }),
+      });
+
+      if (res.status === 429) {
+        errorEl.textContent = 'Too many suggestions today. Please try again tomorrow.';
+        errorEl.hidden = false;
+      } else if (!res.ok) {
+        const data = await res.json();
+        errorEl.textContent = data.error || 'Something went wrong.';
+        errorEl.hidden = false;
+      } else {
+        successEl.hidden = false;
+        form.reset();
+      }
+    } catch {
+      errorEl.textContent = 'Network error. Please try again.';
+      errorEl.hidden = false;
+    }
+
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Submit suggestion';
+  });
+</script>
+
+<style>
+  .topic-request-form form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .topic-request-form label {
+    font-weight: 600;
+    font-size: 0.875rem;
+  }
+
+  .topic-request-form input,
+  .topic-request-form textarea {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    background: var(--color-surface);
+    color: var(--color-text);
+    resize: vertical;
+  }
+
+  .topic-request-form input:focus,
+  .topic-request-form textarea:focus {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 1px;
+    border-color: var(--color-accent);
+  }
+
+  .topic-request-form button {
+    align-self: flex-start;
+    padding: 0.5rem 1rem;
+    background: var(--color-accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: var(--space-xs);
+    transition: background 0.15s ease;
+  }
+
+  .topic-request-form button:hover:not(:disabled) {
+    background: var(--color-accent-hover);
+  }
+
+  .topic-request-form button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  .request-error {
+    color: #991b1b;
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+    background: #fef2f2;
+    border-radius: var(--radius);
+  }
+
+  .request-success {
+    color: var(--color-accent);
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--color-accent-light);
+    border-radius: var(--radius);
+  }
+</style>

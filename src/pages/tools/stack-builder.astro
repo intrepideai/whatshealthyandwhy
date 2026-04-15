@@ -1,0 +1,192 @@
+---
+import Base from '../../layouts/Base.astro';
+
+const supplements = [
+  { name: 'Probiotics', time: 'morning-empty', slot: '7:00 AM — Empty stomach' },
+  { name: 'NAC', time: 'morning-empty', slot: '7:00 AM — Empty stomach' },
+  { name: 'L-Glutamine', time: 'morning-empty', slot: '7:00 AM — Empty stomach' },
+  { name: 'Sulforaphane', time: 'morning-empty', slot: '7:00 AM — Empty stomach' },
+  { name: 'Alpha-Lipoic Acid', time: 'morning-empty', slot: '7:00 AM — Empty stomach' },
+  { name: 'Berberine', time: 'morning-empty', slot: '7:00 AM — Before meals' },
+  { name: 'Vitamin D', time: 'morning-food', slot: '7:30 AM — With breakfast' },
+  { name: 'Vitamin K2', time: 'morning-food', slot: '7:30 AM — With breakfast' },
+  { name: 'CoQ10', time: 'morning-food', slot: '7:30 AM — With breakfast' },
+  { name: 'PQQ', time: 'morning-food', slot: '7:30 AM — With breakfast' },
+  { name: 'B-Vitamins', time: 'morning-food', slot: '7:30 AM — With breakfast' },
+  { name: 'Astaxanthin', time: 'morning-food', slot: '7:30 AM — With breakfast' },
+  { name: 'Rhodiola', time: 'morning-food', slot: '7:30 AM — With breakfast' },
+  { name: 'Cordyceps', time: 'morning-food', slot: '7:30 AM — With breakfast' },
+  { name: 'Creatine', time: 'morning-food', slot: '7:30 AM — With breakfast' },
+  { name: 'NMN', time: 'morning-food', slot: '7:30 AM — With breakfast' },
+  { name: 'Iodine', time: 'morning-food', slot: '7:30 AM — With breakfast' },
+  { name: 'Selenium', time: 'morning-food', slot: '7:30 AM — With breakfast' },
+  { name: 'Boron', time: 'morning-food', slot: '7:30 AM — With breakfast' },
+  { name: 'Shilajit', time: 'morning-food', slot: '7:30 AM — With breakfast' },
+  { name: 'Bacopa', time: 'morning-food', slot: '7:30 AM — With breakfast' },
+  { name: 'Vitamin C', time: 'morning-food', slot: '7:30 AM — With breakfast' },
+  { name: 'Ginseng', time: 'morning-food', slot: '7:30 AM — With breakfast' },
+  { name: 'Maca Root', time: 'morning-food', slot: '7:30 AM — With breakfast' },
+  { name: 'Acetyl-L-Carnitine', time: 'morning-food', slot: '7:30 AM — With breakfast' },
+  { name: 'Chromium', time: 'morning-food', slot: '7:30 AM — With breakfast' },
+  { name: 'Iron', time: 'midday', slot: '12:30 PM — With lunch' },
+  { name: 'Zinc', time: 'midday', slot: '12:30 PM — With lunch' },
+  { name: 'Quercetin', time: 'midday', slot: '12:30 PM — With lunch' },
+  { name: 'Resveratrol', time: 'midday', slot: '12:30 PM — With lunch' },
+  { name: 'Glutathione', time: 'midday', slot: '12:30 PM — Empty stomach' },
+  { name: 'Omega-3', time: 'evening', slot: '6:30 PM — With dinner' },
+  { name: 'Turmeric', time: 'evening', slot: '6:30 PM — With dinner' },
+  { name: 'Ashwagandha', time: 'evening', slot: '6:30 PM — With dinner' },
+  { name: 'Magnesium', time: 'evening', slot: '6:30 PM — With dinner' },
+  { name: 'Taurine', time: 'evening', slot: '6:30 PM — With dinner' },
+  { name: 'Collagen', time: 'evening', slot: '6:30 PM — With dinner' },
+  { name: 'Reishi', time: 'evening', slot: '6:30 PM — With dinner' },
+  { name: 'Milk Thistle', time: 'evening', slot: '6:30 PM — With dinner' },
+  { name: 'Holy Basil', time: 'evening', slot: '6:30 PM — With dinner' },
+  { name: 'Boswellia', time: 'evening', slot: '6:30 PM — With dinner' },
+  { name: 'Glycine', time: 'bedtime', slot: '10:00 PM — Bedtime' },
+  { name: 'L-Theanine', time: 'bedtime', slot: '10:00 PM — Bedtime' },
+  { name: 'Melatonin', time: 'bedtime', slot: '10:00 PM — Bedtime' },
+  { name: '5-HTP', time: 'bedtime', slot: '10:00 PM — Bedtime' },
+  { name: 'Valerian', time: 'bedtime', slot: '10:00 PM — Bedtime' },
+  { name: 'Passionflower', time: 'bedtime', slot: '10:00 PM — Bedtime' },
+];
+
+const timeOrder = ['morning-empty', 'morning-food', 'midday', 'evening', 'bedtime'];
+const timeLabels: Record<string, string> = {
+  'morning-empty': '7:00 AM — Empty Stomach',
+  'morning-food': '7:30 AM — With Breakfast',
+  'midday': '12:30 PM — With Lunch',
+  'evening': '6:30 PM — With Dinner',
+  'bedtime': '10:00 PM — Bedtime',
+};
+---
+
+<Base title="Stack Builder" description="Build your personalized supplement schedule based on evidence-based timing.">
+  <div class="builder-page">
+    <a href="/" class="back-link">&larr; Home</a>
+    <h1>Stack Builder</h1>
+    <p class="builder-intro">Select the supplements you take. We'll generate your personalized daily schedule with optimal timing for absorption and effect.</p>
+
+    <div class="supplement-picker">
+      <h2>Select your supplements</h2>
+      <div class="picker-grid">
+        {supplements.map((s) => (
+          <label class="picker-item">
+            <input type="checkbox" value={s.name} data-time={s.time} />
+            <span class="picker-label">{s.name}</span>
+          </label>
+        ))}
+      </div>
+    </div>
+
+    <div id="my-schedule" class="my-schedule" hidden>
+      <h2>Your Daily Schedule</h2>
+      <div id="schedule-output"></div>
+      <button id="print-btn" class="print-btn">Print schedule</button>
+    </div>
+  </div>
+</Base>
+
+<script define:vars={{ supplements, timeOrder, timeLabels }}>
+  const checkboxes = document.querySelectorAll('.picker-item input');
+  const scheduleEl = document.getElementById('my-schedule');
+  const outputEl = document.getElementById('schedule-output');
+  const printBtn = document.getElementById('print-btn');
+
+  function buildSchedule() {
+    const selected = [];
+    checkboxes.forEach(cb => {
+      if (cb.checked) {
+        selected.push({ name: cb.value, time: cb.dataset.time });
+      }
+    });
+
+    if (selected.length === 0) {
+      scheduleEl.hidden = true;
+      return;
+    }
+
+    const grouped = {};
+    timeOrder.forEach(t => grouped[t] = []);
+    selected.forEach(s => {
+      if (grouped[s.time]) grouped[s.time].push(s.name);
+    });
+
+    let html = '';
+    timeOrder.forEach(time => {
+      if (grouped[time].length === 0) return;
+      html += `<div class="schedule-block">
+        <div class="schedule-time">${timeLabels[time]}</div>
+        <ul class="schedule-items">
+          ${grouped[time].map(name => `<li>${name}</li>`).join('')}
+        </ul>
+      </div>`;
+    });
+
+    outputEl.innerHTML = html;
+    scheduleEl.hidden = false;
+  }
+
+  checkboxes.forEach(cb => cb.addEventListener('change', buildSchedule));
+
+  printBtn.addEventListener('click', () => {
+    window.print();
+  });
+</script>
+
+<style>
+  .builder-page { max-width: 48rem; }
+
+  .builder-intro {
+    color: var(--color-text-muted); margin-bottom: var(--space-xl); line-height: 1.6;
+  }
+
+  .supplement-picker { margin-bottom: var(--space-2xl); }
+  .supplement-picker h2 { margin-bottom: var(--space-md); }
+
+  .picker-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+    gap: var(--space-xs);
+  }
+
+  .picker-item {
+    display: flex; align-items: center; gap: var(--space-xs);
+    padding: 0.375rem 0.5rem; border-radius: var(--radius); cursor: pointer;
+    transition: background 0.1s ease;
+  }
+  .picker-item:hover { background: var(--color-accent-light); }
+  .picker-item input { accent-color: var(--color-accent); }
+  .picker-label { font-size: 0.875rem; color: var(--color-text); }
+
+  .my-schedule h2 { margin-bottom: var(--space-md); }
+
+  :global(.schedule-block) {
+    margin-bottom: var(--space-lg); padding: var(--space-md);
+    background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius);
+  }
+  :global(.schedule-time) {
+    font-weight: 600; font-size: 0.875rem; color: var(--color-accent); margin-bottom: var(--space-xs);
+  }
+  :global(.schedule-items) { padding-left: var(--space-lg); }
+  :global(.schedule-items li) {
+    font-size: 0.9375rem; line-height: 1.6; color: var(--color-text);
+  }
+
+  .print-btn {
+    margin-top: var(--space-md); padding: 0.5rem 1rem; background: none;
+    border: 1px solid var(--color-border); border-radius: var(--radius);
+    font-family: var(--font-body); font-size: 0.875rem; color: var(--color-text-muted);
+    cursor: pointer; transition: border-color 0.15s ease, color 0.15s ease;
+  }
+  .print-btn:hover { border-color: var(--color-accent); color: var(--color-accent); }
+
+  @media print {
+    .supplement-picker, .print-btn, .site-header, .site-footer, .back-link { display: none !important; }
+    .my-schedule { display: block !important; }
+    :global(.schedule-block) { break-inside: avoid; }
+  }
+
+  @media (max-width: 640px) {
+    .picker-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>

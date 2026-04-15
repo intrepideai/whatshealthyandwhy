@@ -1,0 +1,48 @@
+<!-- User authentication state in header — checks /api/auth/me client-side -->
+<div class="user-nav" id="user-nav">
+  <a href="/login" class="user-nav-link" id="user-nav-login">Sign in</a>
+  <a href="/profile" class="user-nav-link" id="user-nav-profile" hidden></a>
+</div>
+
+<script>
+  async function checkAuth() {
+    try {
+      const res = await fetch('/api/auth/me');
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.user) {
+        const loginEl = document.getElementById('user-nav-login');
+        const profileEl = document.getElementById('user-nav-profile');
+        if (loginEl) loginEl.hidden = true;
+        if (profileEl) {
+          profileEl.textContent = data.user.displayName || data.user.email.split('@')[0];
+          profileEl.hidden = false;
+        }
+      }
+    } catch {
+      // Silently fail — show sign in link as default
+    }
+  }
+  checkAuth();
+</script>
+
+<style>
+  .user-nav {
+    display: flex;
+    align-items: center;
+  }
+
+  .user-nav-link {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius);
+    transition: color 0.15s ease, background 0.15s ease;
+  }
+
+  .user-nav-link:hover {
+    color: var(--color-accent);
+    background: var(--color-accent-light);
+  }
+</style>

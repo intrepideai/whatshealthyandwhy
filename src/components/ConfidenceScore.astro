@@ -1,16 +1,32 @@
 ---
+interface EvidenceSummary {
+  rctCount?: number;
+  observationalCount?: number;
+  metaAnalysisCount?: number;
+  totalParticipants?: string;
+  replicated?: boolean;
+  newestStudyYear?: number;
+}
+
 interface Props {
   score?: number;
   note?: string;
+  evidenceSummary?: EvidenceSummary;
+  referenceCount?: number;
 }
 
-const { score, note } = Astro.props;
+const { score, note, evidenceSummary, referenceCount } = Astro.props;
 
 if (!score) return;
 
 const labels = ['', 'Preliminary', 'Emerging', 'Moderate', 'Strong', 'Very Strong'];
 const label = labels[score] || '';
 const fills = Array.from({ length: 5 }, (_, i) => i < score);
+
+const ev = evidenceSummary;
+const hasDetails = ev && (ev.rctCount || ev.observationalCount || ev.metaAnalysisCount || ev.totalParticipants);
+const currentYear = new Date().getFullYear();
+const studyAge = ev?.newestStudyYear ? currentYear - ev.newestStudyYear : null;
 ---
 
 <div class="confidence">
@@ -24,6 +40,49 @@ const fills = Array.from({ length: 5 }, (_, i) => i < score);
     ))}
   </div>
   {note && <p class="confidence-note">{note}</p>}
+
+  {hasDetails && (
+    <div class="evidence-details">
+      <div class="evidence-grid">
+        {ev.rctCount !== undefined && ev.rctCount > 0 && (
+          <div class="evidence-stat">
+            <span class="stat-value">{ev.rctCount}</span>
+            <span class="stat-label">RCTs</span>
+          </div>
+        )}
+        {ev.observationalCount !== undefined && ev.observationalCount > 0 && (
+          <div class="evidence-stat">
+            <span class="stat-value">{ev.observationalCount}</span>
+            <span class="stat-label">Observational</span>
+          </div>
+        )}
+        {ev.metaAnalysisCount !== undefined && ev.metaAnalysisCount > 0 && (
+          <div class="evidence-stat">
+            <span class="stat-value">{ev.metaAnalysisCount}</span>
+            <span class="stat-label">{ev.metaAnalysisCount === 1 ? 'Meta-analysis' : 'Meta-analyses'}</span>
+          </div>
+        )}
+        {ev.totalParticipants && (
+          <div class="evidence-stat">
+            <span class="stat-value">{ev.totalParticipants}</span>
+            <span class="stat-label">Participants</span>
+          </div>
+        )}
+        {referenceCount && referenceCount > 0 && (
+          <div class="evidence-stat">
+            <span class="stat-value">{referenceCount}</span>
+            <span class="stat-label">Citations</span>
+          </div>
+        )}
+      </div>
+      <div class="evidence-tags">
+        {ev.replicated && <span class="evidence-tag replicated">Replicated</span>}
+        {ev.replicated === false && <span class="evidence-tag not-replicated">Not yet replicated</span>}
+        {studyAge !== null && studyAge <= 3 && <span class="evidence-tag recent">Recent ({ev.newestStudyYear})</span>}
+        {studyAge !== null && studyAge > 10 && <span class="evidence-tag aging">Newest: {ev.newestStudyYear}</span>}
+      </div>
+    </div>
+  )}
 </div>
 
 <style>
@@ -76,5 +135,73 @@ const fills = Array.from({ length: 5 }, (_, i) => i < score);
     font-size: 0.8rem;
     color: var(--color-text-muted);
     line-height: 1.4;
+  }
+
+  .evidence-details {
+    margin-top: var(--space-md);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--color-border-light);
+  }
+
+  .evidence-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+  }
+
+  .evidence-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 4rem;
+  }
+
+  .stat-value {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-text);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 0.6875rem;
+    color: var(--color-text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin-top: 0.125rem;
+  }
+
+  .evidence-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    margin-top: var(--space-sm);
+  }
+
+  .evidence-tag {
+    font-size: 0.6875rem;
+    padding: 0.125rem 0.5rem;
+    border-radius: 1rem;
+    font-weight: 600;
+  }
+
+  .evidence-tag.replicated {
+    background: var(--color-accent-light);
+    color: var(--color-accent);
+  }
+
+  .evidence-tag.not-replicated {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  .evidence-tag.recent {
+    background: var(--color-accent-light);
+    color: var(--color-accent);
+  }
+
+  .evidence-tag.aging {
+    background: #fef3c7;
+    color: #92400e;
   }
 </style>

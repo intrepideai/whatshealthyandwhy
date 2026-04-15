@@ -1,0 +1,274 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Your Profile">
+  <div class="profile-page">
+    <div id="profile-loading">
+      <p>Loading...</p>
+    </div>
+
+    <div id="profile-auth" hidden>
+      <div class="profile-header">
+        <h1>Your Profile</h1>
+        <button id="logout-btn" class="logout-btn">Sign out</button>
+      </div>
+
+      <div class="profile-info">
+        <p class="profile-email" id="profile-email"></p>
+        <div class="trust-badge" id="trust-badge">
+          <span class="trust-label">Trust Level</span>
+          <span class="trust-value" id="trust-level">0</span>
+        </div>
+      </div>
+
+      <section class="profile-section">
+        <h2>Your Challenges</h2>
+        <div id="challenges-list">
+          <p class="empty-state">You haven't submitted any challenges yet.</p>
+        </div>
+      </section>
+    </div>
+
+    <div id="profile-unauth" hidden>
+      <h1>Sign in to view your profile</h1>
+      <p>You need to be signed in to view your profile and challenge history.</p>
+      <a href="/login" class="signin-link">Sign in</a>
+    </div>
+  </div>
+</Base>
+
+<script>
+  const loadingEl = document.getElementById('profile-loading')!;
+  const authEl = document.getElementById('profile-auth')!;
+  const unauthEl = document.getElementById('profile-unauth')!;
+  const emailEl = document.getElementById('profile-email')!;
+  const trustEl = document.getElementById('trust-level')!;
+  const challengesList = document.getElementById('challenges-list')!;
+  const logoutBtn = document.getElementById('logout-btn')!;
+
+  async function loadProfile() {
+    try {
+      const res = await fetch('/api/auth/me');
+      if (!res.ok) {
+        loadingEl.hidden = true;
+        unauthEl.hidden = false;
+        return;
+      }
+
+      const { user } = await res.json();
+      if (!user) {
+        loadingEl.hidden = true;
+        unauthEl.hidden = false;
+        return;
+      }
+
+      emailEl.textContent = user.email;
+      trustEl.textContent = user.trustLevel;
+
+      // Load user's challenges
+      const challengeRes = await fetch(`/api/challenges?user=me`);
+      if (challengeRes.ok) {
+        const data = await challengeRes.json();
+        if (data.challenges && data.challenges.length > 0) {
+          challengesList.innerHTML = data.challenges
+            .map((c: { topicId: string; claim: string; status: string; createdAt: string }) => `
+              <div class="challenge-item challenge-${c.status}">
+                <div class="challenge-meta">
+                  <span class="challenge-topic">${c.topicId.replace('/', ' / ')}</span>
+                  <span class="challenge-status">${c.status}</span>
+                </div>
+                <p class="challenge-claim">${c.claim}</p>
+                <time class="challenge-date">${new Date(c.createdAt).toLocaleDateString()}</time>
+              </div>
+            `)
+            .join('');
+        }
+      }
+
+      loadingEl.hidden = true;
+      authEl.hidden = false;
+    } catch {
+      loadingEl.hidden = true;
+      unauthEl.hidden = false;
+    }
+  }
+
+  logoutBtn.addEventListener('click', async () => {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    window.location.href = '/';
+  });
+
+  loadProfile();
+</script>
+
+<style>
+  .profile-page {
+    max-width: 36rem;
+    margin: 0 auto;
+    padding: var(--space-2xl) var(--space-md);
+  }
+
+  .profile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-lg);
+  }
+
+  .profile-header h1 {
+    font-family: var(--font-heading);
+    font-size: 1.75rem;
+  }
+
+  .logout-btn {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    background: none;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    color: var(--color-text-muted);
+    cursor: pointer;
+    font-family: var(--font-body);
+    transition: border-color 0.15s ease, color 0.15s ease;
+  }
+
+  .logout-btn:hover {
+    border-color: var(--color-text-muted);
+    color: var(--color-text);
+  }
+
+  .profile-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-md);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    margin-bottom: var(--space-xl);
+  }
+
+  .profile-email {
+    color: var(--color-text);
+    font-weight: 600;
+  }
+
+  .trust-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.125rem;
+  }
+
+  .trust-label {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .trust-value {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-accent);
+  }
+
+  .profile-section h2 {
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    margin-bottom: var(--space-md);
+  }
+
+  .empty-state {
+    color: var(--color-text-muted);
+    font-style: italic;
+  }
+
+  .challenge-item {
+    padding: var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    margin-bottom: var(--space-sm);
+  }
+
+  .challenge-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-xs);
+  }
+
+  .challenge-topic {
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    text-transform: capitalize;
+  }
+
+  .challenge-status {
+    font-size: 0.75rem;
+    padding: 0.125rem 0.5rem;
+    border-radius: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .challenge-submitted .challenge-status {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  .challenge-accepted .challenge-status {
+    background: var(--color-accent-light);
+    color: var(--color-accent);
+  }
+
+  .challenge-rejected .challenge-status {
+    background: #fef2f2;
+    color: #991b1b;
+  }
+
+  .challenge-under_review .challenge-status {
+    background: #eff6ff;
+    color: #1e40af;
+  }
+
+  .challenge-claim {
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    margin-bottom: var(--space-xs);
+  }
+
+  .challenge-date {
+    font-size: 0.8125rem;
+    color: var(--color-text-light);
+  }
+
+  .signin-link {
+    display: inline-block;
+    margin-top: var(--space-md);
+    padding: 0.625rem 1.25rem;
+    background: var(--color-accent);
+    color: #fff;
+    border-radius: var(--radius);
+    text-decoration: none;
+    font-weight: 600;
+    transition: background 0.15s ease;
+  }
+
+  .signin-link:hover {
+    background: var(--color-accent-hover);
+  }
+
+  #profile-unauth h1 {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    margin-bottom: var(--space-sm);
+  }
+
+  #profile-unauth p {
+    color: var(--color-text-muted);
+    line-height: 1.6;
+  }
+</style>
