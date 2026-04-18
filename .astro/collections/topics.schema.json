@@ -27,6 +27,30 @@
         "confidenceNote": {
           "type": "string"
         },
+        "evidenceSummary": {
+          "type": "object",
+          "properties": {
+            "rctCount": {
+              "type": "number"
+            },
+            "observationalCount": {
+              "type": "number"
+            },
+            "metaAnalysisCount": {
+              "type": "number"
+            },
+            "totalParticipants": {
+              "type": "string"
+            },
+            "replicated": {
+              "type": "boolean"
+            },
+            "newestStudyYear": {
+              "type": "number"
+            }
+          },
+          "additionalProperties": false
+        },
         "references": {
           "type": "array",
           "items": {
