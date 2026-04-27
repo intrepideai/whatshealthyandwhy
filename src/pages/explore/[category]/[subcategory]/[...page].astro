@@ -1,0 +1,351 @@
+---
+import Base from '../../../../layouts/Base.astro';
+import { exploreCategories } from '../../../../data/explore';
+import { resolveTopics, sortByName, type TopicSummary } from '../../../../lib/topics';
+
+export async function getStaticPaths({ paginate }: any) {
+  const PAGE_SIZE = 60;
+  const all: any[] = [];
+  for (const cat of exploreCategories) {
+    for (const sub of cat.subcategories) {
+      const topics = sortByName(await resolveTopics(sub.topicSlugs));
+      const paged = paginate(topics, {
+        params: { category: cat.slug, subcategory: sub.slug },
+        props: {
+          categoryTitle: cat.title,
+          subcategoryName: sub.name,
+          totalCount: topics.length,
+          pageSize: PAGE_SIZE,
+        },
+        pageSize: PAGE_SIZE,
+      });
+      all.push(...paged);
+    }
+  }
+  return all;
+}
+
+interface Props {
+  page: {
+    data: TopicSummary[];
+    currentPage: number;
+    lastPage: number;
+    total: number;
+    url: { current: string; prev?: string; next?: string; first?: string; last?: string };
+  };
+  categoryTitle: string;
+  subcategoryName: string;
+  totalCount: number;
+  pageSize: number;
+}
+
+const { page, categoryTitle, subcategoryName, totalCount, pageSize } = Astro.props as Props;
+const { category: categorySlug, subcategory: subcategorySlug } = Astro.params;
+
+const startIndex = (page.currentPage - 1) * pageSize + 1;
+const endIndex = Math.min(startIndex + page.data.length - 1, totalCount);
+
+const pageNumbers: (number | 'gap')[] = [];
+{
+  const total = page.lastPage;
+  const current = page.currentPage;
+  const window = 1;
+  const set = new Set<number>([1, total, current]);
+  for (let i = current - window; i <= current + window; i++) {
+    if (i >= 1 && i <= total) set.add(i);
+  }
+  const sorted = Array.from(set).sort((a, b) => a - b);
+  let prev = 0;
+  for (const n of sorted) {
+    if (n - prev > 1) pageNumbers.push('gap');
+    pageNumbers.push(n);
+    prev = n;
+  }
+}
+
+function pageHref(n: number) {
+  const base = `/explore/${categorySlug}/${subcategorySlug}`;
+  return n === 1 ? base : `${base}/${n}`;
+}
+
+const titleSuffix = page.lastPage > 1 ? ` (page ${page.currentPage} of ${page.lastPage})` : '';
+---
+
+<Base
+  title={`${subcategoryName} — ${categoryTitle}${titleSuffix}`}
+  description={`Browse ${totalCount} topics in ${subcategoryName}, part of ${categoryTitle}.`}
+>
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
+    <a href="/">Home</a>
+    <span class="crumb-sep">/</span>
+    <a href={`/explore/${categorySlug}`}>{categoryTitle}</a>
+    <span class="crumb-sep">/</span>
+    <span class="crumb-current">{subcategoryName}</span>
+  </nav>
+
+  <header class="sub-header">
+    <h1>{subcategoryName}</h1>
+    <p class="sub-meta">
+      Showing {startIndex}&ndash;{endIndex} of {totalCount} {totalCount === 1 ? 'topic' : 'topics'}
+      {page.lastPage > 1 && <span class="sub-meta-page">&middot; Page {page.currentPage} of {page.lastPage}</span>}
+    </p>
+  </header>
+
+  <ul class="topic-list">
+    {page.data.map((topic) => (
+      <li>
+        <a href={`/${topic.slug}`} class="topic-row">
+          <span class="topic-row-name">{topic.name}</span>
+          {topic.description && <span class="topic-row-desc">{topic.description}</span>}
+          <span class="topic-row-count">{topic.subtopicCount}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+
+  {page.lastPage > 1 && (
+    <nav class="pagination" aria-label="Pagination">
+      {page.url.prev ? (
+        <a href={page.url.prev} class="page-nav" rel="prev">&larr; Previous</a>
+      ) : (
+        <span class="page-nav disabled">&larr; Previous</span>
+      )}
+
+      <ol class="page-numbers">
+        {pageNumbers.map((p) =>
+          p === 'gap' ? (
+            <li class="page-gap">&hellip;</li>
+          ) : (
+            <li>
+              {p === page.currentPage ? (
+                <span class="page-num current" aria-current="page">{p}</span>
+              ) : (
+                <a href={pageHref(p)} class="page-num">{p}</a>
+              )}
+            </li>
+          ),
+        )}
+      </ol>
+
+      {page.url.next ? (
+        <a href={page.url.next} class="page-nav" rel="next">Next &rarr;</a>
+      ) : (
+        <span class="page-nav disabled">Next &rarr;</span>
+      )}
+    </nav>
+  )}
+</Base>
+
+<style>
+  .breadcrumbs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-lg);
+  }
+
+  .breadcrumbs a {
+    color: var(--color-text-muted);
+    text-decoration: none;
+  }
+
+  .breadcrumbs a:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+
+  .crumb-sep {
+    color: var(--color-text-light);
+  }
+
+  .crumb-current {
+    color: var(--color-text);
+    font-weight: 500;
+  }
+
+  .sub-header {
+    margin-bottom: var(--space-xl);
+    padding-bottom: var(--space-md);
+    border-bottom: 1px solid var(--color-border-light);
+  }
+
+  .sub-header h1 {
+    margin: 0 0 var(--space-xs) 0;
+    font-size: 2rem;
+  }
+
+  .sub-meta {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+  }
+
+  .sub-meta-page {
+    color: var(--color-text-light);
+  }
+
+  .topic-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 var(--space-2xl) 0;
+    border-top: 1px solid var(--color-border-light);
+  }
+
+  .topic-list li {
+    border-bottom: 1px solid var(--color-border-light);
+  }
+
+  .topic-row {
+    display: grid;
+    grid-template-columns: minmax(10rem, max-content) 1fr auto;
+    align-items: baseline;
+    gap: var(--space-lg);
+    padding: var(--space-md) var(--space-sm);
+    text-decoration: none;
+    color: var(--color-text);
+    transition: background 0.15s ease;
+  }
+
+  .topic-row:hover {
+    background: var(--color-bg);
+    text-decoration: none;
+  }
+
+  .topic-row-name {
+    font-weight: 600;
+    font-size: 1rem;
+  }
+
+  .topic-row:hover .topic-row-name {
+    color: var(--color-accent);
+  }
+
+  .topic-row-desc {
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .topic-row-count {
+    flex-shrink: 0;
+    font-size: 0.75rem;
+    color: var(--color-text-light);
+    background: var(--color-bg);
+    padding: 2px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .topic-row:hover .topic-row-count {
+    background: var(--color-surface);
+  }
+
+  .pagination {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    padding: var(--space-lg) 0;
+  }
+
+  .page-nav {
+    padding: 0.45rem 0.85rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-text);
+    text-decoration: none;
+    transition: border-color 0.15s ease, color 0.15s ease;
+  }
+
+  .page-nav:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  .page-nav.disabled {
+    color: var(--color-text-light);
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .page-numbers {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+  }
+
+  .page-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2rem;
+    height: 2rem;
+    padding: 0 0.5rem;
+    border-radius: var(--radius);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  a.page-num:hover {
+    background: var(--color-bg);
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  .page-num.current {
+    background: var(--color-accent);
+    color: white;
+  }
+
+  .page-gap {
+    color: var(--color-text-light);
+    padding: 0 var(--space-xs);
+    font-size: 0.875rem;
+  }
+
+  @media (max-width: 720px) {
+    .sub-header h1 {
+      font-size: 1.5rem;
+    }
+
+    .topic-row {
+      grid-template-columns: 1fr auto;
+      grid-template-rows: auto auto;
+      gap: var(--space-xs) var(--space-md);
+    }
+
+    .topic-row-name {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .topic-row-count {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .topic-row-desc {
+      grid-column: 1 / -1;
+      grid-row: 2;
+      -webkit-line-clamp: 3;
+    }
+  }
+</style>
