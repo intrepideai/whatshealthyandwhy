@@ -1,52 +1,20 @@
 ---
 import Base from '../layouts/Base.astro';
-import { getCollection } from 'astro:content';
+import { exploreCategories } from '../data/explore';
+import { resolveTopics } from '../lib/topics';
 
-const allSubtopics = await getCollection('topics');
-
-const topicSet = new Set<string>();
-for (const entry of allSubtopics) {
-  topicSet.add(entry.data.topic);
-}
-
-const entryPoints = [
-  {
-    name: "What's Good For You",
-    description: 'Supplements, foods, herbs, mushrooms, teas, and natural compounds backed by research.',
-    href: '/explore/good-for-you',
-    count: '80+ topics',
-  },
-  {
-    name: "What's Harming You",
-    description: "Hidden dangers in food, personal care, your home, and the environment.",
-    href: '/explore/harming-you',
-    count: '30+ topics',
-  },
-  {
-    name: 'Your Body',
-    description: 'How your immune system, hormones, and organs actually work — and what medicine gets right and wrong.',
-    href: '/explore/your-body',
-    count: '20+ topics',
-  },
-  {
-    name: 'How to Live',
-    description: 'Exercise, sleep, fasting, breathwork, and daily practices for a healthier life.',
-    href: '/explore/how-to-live',
-    count: '25+ topics',
-  },
-  {
-    name: 'Detox & Heal',
-    description: 'Supporting your body\'s natural ability to cleanse, recover, and restore.',
-    href: '/explore/detox-and-heal',
-    count: '15+ topics',
-  },
-  {
-    name: 'Skin & Self Care',
-    description: 'Natural alternatives for what you put on your body, from skincare to dental health.',
-    href: '/explore/skin-and-self-care',
-    count: '10+ topics',
-  },
-];
+const entryPoints = await Promise.all(
+  exploreCategories.map(async (cat) => {
+    const allSlugs = cat.subcategories.flatMap((s) => s.topicSlugs);
+    const topics = await resolveTopics(allSlugs);
+    return {
+      name: cat.title,
+      description: cat.tagline,
+      href: `/explore/${cat.slug}`,
+      count: topics.length,
+    };
+  }),
+);
 ---
 
 <Base title="What's Healthy and Why">
@@ -67,7 +35,7 @@ const entryPoints = [
       <a href={ep.href} class="entry-card">
         <h2>{ep.name}</h2>
         <p>{ep.description}</p>
-        <span class="entry-count">{ep.count}</span>
+        <span class="entry-count">{ep.count} {ep.count === 1 ? 'topic' : 'topics'}</span>
       </a>
     ))}
   </div>

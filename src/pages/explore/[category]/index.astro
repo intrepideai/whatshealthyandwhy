@@ -1,0 +1,193 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { exploreCategories, getCategory } from '../../../data/explore';
+import { resolveTopics, sortByName } from '../../../lib/topics';
+
+export async function getStaticPaths() {
+  return exploreCategories.map((cat) => ({ params: { category: cat.slug } }));
+}
+
+const { category: categorySlug } = Astro.params;
+const category = getCategory(categorySlug!)!;
+
+const subcategoryData = await Promise.all(
+  category.subcategories.map(async (sub) => {
+    const topics = sortByName(await resolveTopics(sub.topicSlugs));
+    const totalArticles = topics.reduce((n, t) => n + t.subtopicCount, 0);
+    const preview = topics.slice(0, 6);
+    return { ...sub, topics, totalArticles, preview, count: topics.length };
+  }),
+);
+
+const totalTopics = subcategoryData.reduce((n, s) => n + s.count, 0);
+---
+
+<Base title={category.title} description={category.description}>
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
+    <a href="/">Home</a>
+    <span class="crumb-sep">/</span>
+    <span class="crumb-current">{category.title}</span>
+  </nav>
+
+  <header class="cat-header">
+    <h1>{category.title}</h1>
+    <p class="cat-description">{category.description}</p>
+    <p class="cat-meta">
+      {totalTopics} topics across {subcategoryData.length} {subcategoryData.length === 1 ? 'category' : 'categories'}
+    </p>
+  </header>
+
+  <div class="subcat-grid">
+    {subcategoryData.map((sub) => (
+      <a href={`/explore/${category.slug}/${sub.slug}`} class="subcat-card">
+        <div class="subcat-card-head">
+          <h2>{sub.name}</h2>
+          <span class="subcat-count">{sub.count} {sub.count === 1 ? 'topic' : 'topics'}</span>
+        </div>
+        {sub.preview.length > 0 && (
+          <p class="subcat-preview">
+            {sub.preview.map((t) => t.name).join(' · ')}
+            {sub.count > sub.preview.length && <span class="subcat-more"> · +{sub.count - sub.preview.length} more</span>}
+          </p>
+        )}
+        <span class="subcat-cta">Browse all {sub.count} &rarr;</span>
+      </a>
+    ))}
+  </div>
+</Base>
+
+<style>
+  .breadcrumbs {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-lg);
+  }
+
+  .breadcrumbs a {
+    color: var(--color-text-muted);
+    text-decoration: none;
+  }
+
+  .breadcrumbs a:hover {
+    color: var(--color-accent);
+  }
+
+  .crumb-sep {
+    color: var(--color-text-light);
+  }
+
+  .crumb-current {
+    color: var(--color-text);
+    font-weight: 500;
+  }
+
+  .cat-header {
+    margin-bottom: var(--space-2xl);
+    padding-bottom: var(--space-lg);
+    border-bottom: 1px solid var(--color-border-light);
+  }
+
+  .cat-header h1 {
+    margin: 0 0 var(--space-sm) 0;
+    font-size: 2.25rem;
+  }
+
+  .cat-description {
+    color: var(--color-text-muted);
+    font-size: 1.05rem;
+    max-width: 42rem;
+    margin: 0 0 var(--space-sm) 0;
+    line-height: 1.6;
+  }
+
+  .cat-meta {
+    margin: 0;
+    color: var(--color-text-light);
+    font-size: 0.85rem;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  .subcat-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-lg);
+  }
+
+  .subcat-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    padding: var(--space-xl);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  }
+
+  .subcat-card:hover {
+    border-color: var(--color-accent);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+    text-decoration: none;
+    transform: translateY(-1px);
+  }
+
+  .subcat-card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-md);
+  }
+
+  .subcat-card h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: var(--color-text);
+  }
+
+  .subcat-count {
+    flex-shrink: 0;
+    font-size: 0.75rem;
+    color: var(--color-text-light);
+    background: var(--color-bg);
+    padding: 3px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .subcat-preview {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    line-height: 1.55;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .subcat-more {
+    color: var(--color-text-light);
+  }
+
+  .subcat-cta {
+    margin-top: auto;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-accent);
+  }
+
+  @media (max-width: 720px) {
+    .subcat-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .cat-header h1 {
+      font-size: 1.75rem;
+    }
+  }
+</style>
