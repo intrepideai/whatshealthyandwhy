@@ -1,7 +1,7 @@
 ---
 topic: "Birth Control"
 title: "Alternatives and Coming Off"
-order: 3
+order: 5
 description: "Non-hormonal birth control options, fertility awareness methods, and what to expect when coming off the pill"
 references:
   - id: "1"
